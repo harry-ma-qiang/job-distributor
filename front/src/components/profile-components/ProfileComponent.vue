@@ -68,6 +68,7 @@
                 </v-icon>
             <v-icon
               small
+              @click="handleClickDeleteProfileButton(item)"
             >
               delete
             </v-icon>
@@ -128,7 +129,17 @@ export default {
   },
 
   methods: {
+    async handleClickDeleteProfileButton(profile) {
+      const res = await this.$confirm('Are you sure that you want to delete this profile?');
 
+      if (res) {
+        try {
+          console.log(profile);
+        // eslint-disable-next-line no-empty
+        } catch (e) {
+        }
+      }
+    },
   },
 };
 </script>
