@@ -7,6 +7,15 @@
         <v-card-text>
             <v-container>
             <v-row>
+              <v-flex xs12>
+                <v-combobox
+                  v-model="selectedProfile"
+                  :items="profiles"
+                  label="Select profile to fill out fields automatically"
+                ></v-combobox>
+              </v-flex>
+            </v-row>
+            <v-row>
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field v-model="job.Bitrate" label="Bit rate"></v-text-field>
                 </v-col>
@@ -30,7 +39,8 @@
 
 <script>
 import {
-  VCard, VCardTitle, VCardText, VContainer, VRow, VCol, VTextField, VCardActions, VSpacer, VBtn,
+  VCard, VCardTitle, VCardText, VContainer, VRow, VCol, VTextField,
+  VCardActions, VSpacer, VBtn, VFlex, VCombobox,
 } from 'vuetify/lib';
 
 export default {
@@ -46,6 +56,8 @@ export default {
     VCardActions,
     VSpacer,
     VBtn,
+    VFlex,
+    VCombobox,
   },
 
   props: {
@@ -66,6 +78,12 @@ export default {
   data() {
     return {
       job: this.defaultJob,
+      selectedProfile: null,
+      profiles: [
+        'First Profile',
+        'Second Profile',
+        'Third Profile',
+      ],
     };
   },
 
