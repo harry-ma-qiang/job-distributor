@@ -115,7 +115,7 @@ def start():
     return jsonify({'Name': 'VOD Transcoding system', 'Version': Version})
 
 
-@app.route('/api/vod_transcoding_system')
+@app.route('/')
 def get_page():
     return render_template("index.html")
 
