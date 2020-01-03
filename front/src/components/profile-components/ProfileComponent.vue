@@ -27,20 +27,24 @@
                 vertical
               ></v-divider>
               <v-spacer></v-spacer>
-              <v-btn color="primary" dark class="mb-2">
+              <v-btn color="primary" dark class="mb-2" @click="handleClickNewProfileButton">
                 New Profile
               </v-btn>
-              <!-- <v-dialog v-model="isNewJobModalOpen" v-if="isNewJobModalOpen" max-width="500px">
-                <CreateEditJobForm
-                  @close = "closeAddJobForm"
-                  @save = "handleNewJobFormSave"
+              <v-dialog
+                v-model="isNewProfileModalOpen"
+                v-if="isNewProfileModalOpen"
+                max-width="500px"
+              >
+                <CreateEditProfileForm
+                  @close = "closeAddProfileForm"
+                  @save = "handleNewProfileFormSave"
                 />
               </v-dialog>
-              <v-dialog
+              <!-- <v-dialog
                 v-model="isEditJobModalOpen"
                 v-if="isEditJobModalOpen"
                 max-width="500px">
-                <CreateEditJobForm
+                <CreateEditProfileForm
                   title="Edit job"
                   :default-job="currentJobSettings"
                   :job-id="currentJobId"
@@ -92,7 +96,9 @@ import {
   VSpacer,
   VBtn,
   VCheckbox,
+  VDialog,
 } from 'vuetify/lib';
+import CreateEditProfileForm from './CreateEditProfileForm.vue';
 
 export default {
   name: 'ProfileComponent',
@@ -106,14 +112,16 @@ export default {
     VToolbar,
     VToolbarTitle,
     VDivider,
+    VDialog,
     VSpacer,
     VBtn,
     VCheckbox,
+    CreateEditProfileForm,
   },
 
   data() {
     return {
-      isNewJobModalOpen: false,
+      isNewProfileModalOpen: false,
       isEditJobModalOpen: false,
       search: '',
       headers: [
@@ -138,6 +146,23 @@ export default {
         // eslint-disable-next-line no-empty
         } catch (e) {
         }
+      }
+    },
+
+    handleClickNewProfileButton() {
+      this.isNewProfileModalOpen = true;
+    },
+
+    closeAddProfileForm() {
+      this.isNewProfileModalOpen = false;
+    },
+
+    async handleNewProfileFormSave(profile) {
+      try {
+        console.log(profile);
+        this.isNewProfileModalOpen = false;
+      // eslint-disable-next-line no-empty
+      } catch (e) {
       }
     },
   },

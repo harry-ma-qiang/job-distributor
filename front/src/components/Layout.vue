@@ -1,6 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/extensions */
-/* eslint-disable no-param-reassign */
 <template>
   <v-card>
     <v-toolbar
