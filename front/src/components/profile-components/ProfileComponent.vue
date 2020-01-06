@@ -150,7 +150,8 @@ export default {
 
       if (res) {
         try {
-          console.log(profile);
+          await this.deleteProfile(profile.id);
+          await this.fetchProfiles();
         // eslint-disable-next-line no-empty
         } catch (e) {
         }
@@ -199,6 +200,14 @@ export default {
         await axios.post(`${baseUrl}/api/profile/${name}`, jobOptions);
       } catch (e) {
         throw new Error(e.message);
+      }
+    },
+
+    async deleteProfile(id) {
+      try {
+        await axios.delete(`${baseUrl}/api/profile/${id}`);
+      } catch (e) {
+        throw new Error(`Can not delete profile ${id}`);
       }
     },
   },
