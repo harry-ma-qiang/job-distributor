@@ -36,22 +36,22 @@
                 max-width="500px"
               >
                 <CreateEditProfileForm
-                  @close = "closeAddProfileForm"
+                  @close = "handleAddProfileFormClose"
                   @save = "handleNewProfileFormSave"
                 />
               </v-dialog>
-              <!-- <v-dialog
-                v-model="isEditJobModalOpen"
-                v-if="isEditJobModalOpen"
+              <v-dialog
+                v-model="isEditProfileModalOpen"
+                v-if="isEditProfileModalOpen"
                 max-width="500px">
                 <CreateEditProfileForm
                   title="Edit job"
-                  :default-job="currentJobSettings"
-                  :job-id="currentJobId"
-                  @close = "handleEditJobFormClose"
-                  @save = "handleEditJobFormSave"
+                  :default-profile="currentProfileJobSettings"
+                  :profile-id="currentProfileId"
+                  @close = "handleEditProfileFormClose"
+                  @save = "handleEditProfileFormSave"
                 />
-              </v-dialog> -->
+              </v-dialog>
             </v-toolbar>
           </template>
           <template v-slot:item.default="{ item }">
@@ -64,12 +64,13 @@
             </v-checkbox>
           </template>
           <template v-slot:item.action="{ item }">
-              <v-icon
-                  small
-                  class="mr-2"
-                >
-                  edit
-                </v-icon>
+            <v-icon
+              small
+              class="mr-2"
+              @click="handleEditProfileIconClick(item)"
+            >
+              edit
+            </v-icon>
             <v-icon
               small
               @click="handleClickDeleteProfileButton(item)"
@@ -126,7 +127,7 @@ export default {
   data() {
     return {
       isNewProfileModalOpen: false,
-      isEditJobModalOpen: false,
+      isEditProfileModalOpen: false,
       search: '',
       headers: [
         { text: 'Name', value: 'name' },
@@ -135,7 +136,7 @@ export default {
       ],
       profiles: [{ id: 0, name: 'First profile' }, { id: 1, name: 'Second profile' }],
       defaultProfile: [],
-      currentProfileSettings: null,
+      currentProfileJobSettings: null,
       currentProfileId: null,
     };
   },
@@ -145,6 +146,18 @@ export default {
   },
 
   methods: {
+    async handleEditProfileIconClick(profile) {
+      try {
+        const jobSettings = await this.fetchProfileJobSettings(profile.id);
+        this.currentProfileJobSettings = { Name: profile.name, Options: jobSettings.data };
+        this.currentProfileId = profile.id;
+        this.isEditProfileModalOpen = true;
+      // eslint-disable-next-line no-empty
+      } catch (e) {
+
+      }
+    },
+
     async handleClickDeleteProfileButton(profile) {
       const res = await this.$confirm('Are you sure that you want to delete this profile?');
 
@@ -162,8 +175,31 @@ export default {
       this.isNewProfileModalOpen = true;
     },
 
-    closeAddProfileForm() {
+    handleAddProfileFormClose() {
       this.isNewProfileModalOpen = false;
+    },
+
+    handleEditProfileFormClose() {
+      this.isEditProfileModalOpen = false;
+    },
+
+    async handleEditProfileFormSave(profile, profileId) {
+      try {
+        const profileData = {
+          Id: profileId,
+          Name: profile.Name,
+          Options: {
+            Bitrate: profile.Options.Bitrate,
+            Framerate: profile.Options.Framerate,
+            Codec: profile.Options.Codec,
+          },
+        };
+        await this.editProfile(profileData);
+        this.isEditProfileModalOpen = false;
+        await this.fetchProfiles();
+      // eslint-disable-next-line no-empty
+      } catch (e) {
+      }
     },
 
     async handleNewProfileFormSave(profile) {
@@ -208,6 +244,38 @@ export default {
         await axios.delete(`${baseUrl}/api/profile/${id}`);
       } catch (e) {
         throw new Error(`Can not delete profile ${id}`);
+      }
+    },
+
+    async editProfile(profile) {
+      try {
+        await axios.post(`${baseUrl}/api/updateProfile`, profile);
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    },
+
+    async fetchProfileJobSettings(id) {
+      try {
+        const response = await axios.get(`${baseUrl}/api/getProfileOptions/${id}`);
+        if (response) {
+          return response;
+        }
+        throw new Error('Resoponse is empty');
+      } catch (e) {
+        throw new Error('Can not fetch job settings');
+      }
+    },
+
+    async getProfile(id) {
+      try {
+        const response = await axios.get(`${baseUrl}/api/getProfile/${id}`);
+        if (response) {
+          return response;
+        }
+        throw new Error('Response is empty');
+      } catch (e) {
+        throw new Error('Cannot fetch profile');
       }
     },
   },
