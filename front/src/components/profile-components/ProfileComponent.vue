@@ -167,8 +167,14 @@ export default {
 
     async handleNewProfileFormSave(profile) {
       try {
-        console.log(profile);
+        await this.addProfile({
+          Bitrate: profile.Options.Bitrate,
+          Framerate: profile.Options.Framerate,
+          Codec: profile.Options.Codec,
+        }, profile.Name);
+
         this.isNewProfileModalOpen = false;
+        await this.fetchProfiles();
       // eslint-disable-next-line no-empty
       } catch (e) {
       }
@@ -185,6 +191,14 @@ export default {
         }
       } catch (e) {
         throw new Error('Can not fetch profiles list');
+      }
+    },
+
+    async addProfile(jobOptions, name) {
+      try {
+        await axios.post(`${baseUrl}/api/profile/${name}`, jobOptions);
+      } catch (e) {
+        throw new Error(e.message);
       }
     },
   },

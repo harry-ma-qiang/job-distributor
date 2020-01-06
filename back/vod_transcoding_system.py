@@ -76,7 +76,7 @@ def add_job():
     return jsonify({"code": 200, "msg": "Job has been added.", "result": True})
 
 
-@app.route('/api/profile/<profile_name>', methods=['POST'])
+@app.route('/api/profile/<profile_name>', methods=['GET', 'POST'])
 def add_profile(profile_name):
     job_options = request.get_json(force=True)
     db_management.addProfile([db_management.JobOption(key, job_options[key]) for key in job_options], profile_name)

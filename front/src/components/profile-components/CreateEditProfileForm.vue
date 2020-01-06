@@ -13,13 +13,17 @@
             </v-row>
             <v-row>
                 <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="profile.Bitrate" label="Bit rate"></v-text-field>
+                  <v-text-field v-model="profile.Options.Bitrate" label="Bit rate"></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="profile.Framerate" label="Frame rate"></v-text-field>
+                  <v-text-field
+                    v-model="profile.Options.Framerate"
+                    label="Frame rate"
+                  >
+                  </v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="profile.Codec" label="Codec"></v-text-field>
+                  <v-text-field v-model="profile.Options.Codec" label="Codec"></v-text-field>
                 </v-col>
             </v-row>
             </v-container>
@@ -61,7 +65,7 @@ export default {
     defaultProfile: {
       type: Object,
       default: () => ({
-        Name: '', Bitrate: '', Framerate: '', Codec: '',
+        Name: '', Options: { Bitrate: '', Framerate: '', Codec: '' },
       }),
     },
     profileId: {
