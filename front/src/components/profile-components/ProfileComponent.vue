@@ -98,7 +98,11 @@ import {
   VCheckbox,
   VDialog,
 } from 'vuetify/lib';
+import axios from 'axios';
+import config from 'config';
 import CreateEditProfileForm from './CreateEditProfileForm.vue';
+
+const { baseUrl } = config.api;
 
 export default {
   name: 'ProfileComponent',
@@ -136,6 +140,10 @@ export default {
     };
   },
 
+  created() {
+    this.fetchProfiles();
+  },
+
   methods: {
     async handleClickDeleteProfileButton(profile) {
       const res = await this.$confirm('Are you sure that you want to delete this profile?');
@@ -163,6 +171,20 @@ export default {
         this.isNewProfileModalOpen = false;
       // eslint-disable-next-line no-empty
       } catch (e) {
+      }
+    },
+
+    async fetchProfiles() {
+      try {
+        const response = await axios.get(`${baseUrl}/api/getProfiles`);
+
+        if (response) {
+          this.profiles = response.data;
+        } else {
+          throw new Error('Resoponse is empty');
+        }
+      } catch (e) {
+        throw new Error('Can not fetch profiles list');
       }
     },
   },
