@@ -218,7 +218,7 @@ export default {
 
     async fetchJobSettings(id) {
       try {
-        const response = await axios.get(`${baseUrl}/api/getAttributes/${id}`);
+        const response = await axios.get(`${baseUrl}/api/getOptions/${id}`);
         if (response) {
           return response;
         }

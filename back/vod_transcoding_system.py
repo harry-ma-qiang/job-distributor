@@ -52,7 +52,7 @@ def fetch_job():
             result = {'code': 400, 'msg': "The queue is empty."}
             return jsonify(result), result['code']
         else:
-            job_options = db_management.getAttributesByJobId(job.id)
+            job_options = db_management.getJobOptionsByJobId(job.id)
             result = dict((j.key, j.value) for j in job_options)
             result.update({'jobId': job.id})
 
@@ -64,8 +64,7 @@ def fetch_job():
 @app.route('/api/job', methods=['POST'])
 def add_job():
     job_options = request.get_json(force=True)
-    attributes = [db_management.Attribute(key, job_options[key]) for key in job_options]
-    db_management.addJob(attributes)
+    db_management.addJob([db_management.JobOption(key, job_options[key]) for key in job_options])
 
     return jsonify({"code": 200, "msg": "Job has been added.", "result": True})
 
@@ -93,9 +92,9 @@ def get_jobs():
     return jsonify(job_dict), 200
 
 
-@app.route('/api/getAttributes/<job_id>', methods=['GET'])
-def get_job_attributes(job_id):
-    job_options = db_management.getAttributesByJobId(job_id)
+@app.route('/api/getOptions/<job_id>', methods=['GET'])
+def get_job_options(job_id):
+    job_options = db_management.getJobOptionsByJobId(job_id)
     result = dict((j.key, j.value) for j in job_options)
 
     return jsonify(result), 200
@@ -104,8 +103,8 @@ def get_job_attributes(job_id):
 @app.route('/api/updateJob/<job_id>', methods=['GET', 'POST'])
 def update_job(job_id):
     job_options = request.get_json(force=True)
-    attributes = [db_management.Attribute(key, job_options[key]) for key in job_options]
-    db_management.updateJob(job_id, attributes)
+    options = [db_management.JobOption(key, job_options[key]) for key in job_options]
+    db_management.updateJob(job_id, options)
 
     return jsonify({"code": 200, "msg": "Job has been updated.", "result": True}), 200
 

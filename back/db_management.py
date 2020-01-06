@@ -11,7 +11,14 @@ class Job:
         self.lastUpdate = lastUpdate
 
 
-class Attribute:
+class Option:
+    def __init__(self, option_id, key, name):
+        self.id = option_id
+        self.key = key
+        self.name = name
+
+
+class JobOption:
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -29,6 +36,18 @@ def currentDatetime():
     return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 
+def getOptions():
+    options = []
+    with sqlite3.connect(__DBNAME__) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT ID, Key, Name FROM Option")
+
+        for option in cursor.fetchall():
+            options.append(Option(option[0], option[1], option[2]))
+
+    return options
+
+
 def getJobs():
     jobs = []
     with sqlite3.connect(__DBNAME__) as conn:
@@ -41,16 +60,18 @@ def getJobs():
     return jobs
 
 
-def getAttributesByJobId(jobId):
-    attributes = []
+def getJobOptionsByJobId(jobId):
+    job_options = []
     with sqlite3.connect(__DBNAME__) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT Key, Value FROM Attribute WHERE JobID = ?", (jobId,))
+        cursor.execute(""" SELECT A.Key, J.Value FROM JobOptionValues AS J
+                            INNER JOIN Option AS A ON A.ID = J.OptionID
+                            WHERE JobID = ? """, (jobId,))
 
-        for attribute in cursor.fetchall():
-            attributes.append(Attribute(attribute[0], attribute[1]))
+        for job_option in cursor.fetchall():
+            job_options.append(JobOption(job_option[0], job_option[1]))
 
-    return attributes
+    return job_options
 
 
 def changeJobStatus(jobId, status):
@@ -61,15 +82,20 @@ def changeJobStatus(jobId, status):
         conn.commit()
 
 
-def addJob(attributes):
+def addJob(job_options):
     with sqlite3.connect(__DBNAME__) as conn:
         try:
             now = currentDatetime()
             cursor = conn.cursor()
+            # add new job
             cursor.execute("INSERT INTO Job (LastUpdate) VALUES(?)", (now,))
             job_id = cursor.lastrowid
-            cursor.executemany("INSERT INTO Attribute (Key, Value, JobID) VALUES (?,?,?)",
-                               [(attribute.key, attribute.value, cursor.lastrowid) for attribute in attributes])
+
+            # add new job option
+            options = getOptions()
+            cursor.executemany("INSERT INTO JobOptionValues (OptionID, JobID, Value) VALUES (?,?,?)",
+                               [(next(o.id for o in options if o.key == job_option.key), job_id, job_option.value)
+                                for job_option in job_options])
         except Exception as e:
             conn.rollback()
             raise e
@@ -79,21 +105,15 @@ def addJob(attributes):
         return job_id
 
 
-def addAttributes(jobId, attributes):
-    with sqlite3.connect(__DBNAME__) as conn:
-        cursor = conn.cursor()
-        cursor.executemany("INSERT INTO Attribute (Key, Value, JobID) VALUES (?,?,?)",
-                           [(attribute.key, attribute.value, jobId) for attribute in attributes])
-        conn.commit()
-
-
-def updateJob(jobId, attributes):
+def updateJob(jobId, job_options):
     with sqlite3.connect(__DBNAME__) as conn:
         now = currentDatetime()
         try:
             cursor = conn.cursor()
-            cursor.executemany("INSERT OR REPLACE INTO Attribute (Key, Value, JobID) VALUES (?,?,?)",
-                               [(attribute.key, attribute.value, jobId) for attribute in attributes])
+            options = getOptions()
+            cursor.executemany("INSERT OR REPLACE INTO JobOptionValues (OptionID, JobID, Value) VALUES (?,?,?)",
+                               [(next(o.id for o in options if o.key == job_option.key), jobId, job_option.value)
+                                for job_option in job_options])
             cursor.execute("UPDATE Job SET LastUpdate = ? WHERE ID = ?", (now, jobId))
         except Exception as e:
             conn.rollback()
@@ -106,7 +126,7 @@ def deleteJob(jobId):
     with sqlite3.connect(__DBNAME__) as conn:
         try:
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM Attribute WHERE JobID=?", (jobId,))
+            cursor.execute("DELETE FROM JobOptionValues WHERE JobID=?", (jobId,))
             cursor.execute("DELETE FROM Job WHERE ID=?", (jobId,))
         except Exception as e:
             conn.rollback()
