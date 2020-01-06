@@ -25,6 +25,13 @@ def is_job_exist(jobId):
     return int(jobId) not in jobsId
 
 
+def is_profile_exist(profileId):
+    profiles = db_management.getProfiles()
+    profilesId = [profile.id for profile in profiles]
+
+    return int(profileId) not in profilesId
+
+
 @app.route('/api/setJobStatus', methods=['POST'])
 def set_job_status():
     job_status = request.get_json(force=True)
@@ -69,6 +76,14 @@ def add_job():
     return jsonify({"code": 200, "msg": "Job has been added.", "result": True})
 
 
+@app.route('/api/profile/<profile_name>', methods=['POST'])
+def add_profile(profile_name):
+    job_options = request.get_json(force=True)
+    db_management.addProfile([db_management.JobOption(key, job_options[key]) for key in job_options], profile_name)
+
+    return jsonify({"code": 200, "msg": "Profile has been added.", "result": True})
+
+
 @app.route('/api/job/<jobId>', methods=['DELETE'])
 def delete_job(jobId):
     if is_job_exist(jobId):
@@ -77,6 +92,16 @@ def delete_job(jobId):
     else:
         db_management.deleteJob(jobId)
         return jsonify({"code": 200, "msg": "Job has deleted.", "result": True}), 200
+
+
+@app.route('/api/profile/<profileId>', methods=['DELETE'])
+def delete_profile(profileId):
+    if is_profile_exist(profileId):
+        return jsonify({"code": 404, "msg": "Profile with such id:{} doesn't exist."
+            .format(profileId), "result": True}), 404
+    else:
+        db_management.deleteProfile(profileId)
+        return jsonify({"code": 200, "msg": "Profile has deleted.", "result": True}), 200
 
 
 @app.route('/api/getJobs', methods=['GET'])
@@ -92,9 +117,25 @@ def get_jobs():
     return jsonify(job_dict), 200
 
 
+@app.route('/api/getProfiles', methods=['GET'])
+def get_profiles():
+    profiles = db_management.getProfiles()
+    profile_dict = [ob.__dict__ for ob in profiles]
+
+    return jsonify(profile_dict), 200
+
+
 @app.route('/api/getOptions/<job_id>', methods=['GET'])
 def get_job_options(job_id):
     job_options = db_management.getJobOptionsByJobId(job_id)
+    result = dict((j.key, j.value) for j in job_options)
+
+    return jsonify(result), 200
+
+
+@app.route('/api/getProfileOptions/<profile_id>', methods=['GET'])
+def get_profile_options(profile_id):
+    job_options = db_management.getJobOptionsByProfileId(profile_id)
     result = dict((j.key, j.value) for j in job_options)
 
     return jsonify(result), 200
@@ -107,6 +148,15 @@ def update_job(job_id):
     db_management.updateJob(job_id, options)
 
     return jsonify({"code": 200, "msg": "Job has been updated.", "result": True}), 200
+
+
+@app.route('/api/updateProfile', methods=['POST'])
+def update_profile():
+    profile = request.get_json(force=True)
+    options = [db_management.JobOption(key, profile["options"][key]) for key in profile["options"]]
+    db_management.updateProfile(db_management.Profile(profile["id"], profile["name"]), options)
+
+    return jsonify({"code": 200, "msg": "Profile has been updated.", "result": True}), 200
 
 
 @app.route('/api')
