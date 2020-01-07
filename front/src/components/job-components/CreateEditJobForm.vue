@@ -11,7 +11,9 @@
                 <v-combobox
                   v-model="selectedProfile"
                   :items="profiles"
+                  item-text="name"
                   label="Select profile to fill out fields automatically"
+                  v-on:change="handleChangeProfileComboboxValue"
                 ></v-combobox>
               </v-flex>
             </v-row>
@@ -42,6 +44,7 @@ import {
   VCard, VCardTitle, VCardText, VContainer, VRow, VCol, VTextField,
   VCardActions, VSpacer, VBtn, VFlex, VCombobox,
 } from 'vuetify/lib';
+import { mapState } from 'vuex';
 
 export default {
   name: 'CreateEditJobForm',
@@ -79,13 +82,17 @@ export default {
     return {
       job: this.defaultJob,
       selectedProfile: null,
-      profiles: [
-        'First Profile',
-        'Second Profile',
-        'Third Profile',
-      ],
     };
   },
+
+  created() {
+    this.$store.dispatch('loadProfiles');
+  },
+
+  computed: mapState([
+    'profiles',
+    'profileJobSettings',
+  ]),
 
   methods: {
     closeForm() {
@@ -94,6 +101,19 @@ export default {
 
     saveForm() {
       this.$emit('save', this.job, this.jobId);
+    },
+
+    async handleChangeProfileComboboxValue(profile) {
+      try {
+        await this.$store.dispatch('fetchProfileJobSettings', profile.id);
+        console.log(this.profileJobSettings);
+        if (this.profileJobSettings) {
+          this.job = this.profileJobSettings;
+        }
+        // eslint-disable-next-line no-empty
+      } catch (e) {
+
+      }
     },
   },
 };
