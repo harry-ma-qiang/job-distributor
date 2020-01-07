@@ -12,7 +12,7 @@
       <v-card-text>
         <v-data-table
           :headers="headers"
-          :items="jobQueue"
+          :items="jobs"
           :search="search"
           :items-per-page="5"
           sort-by="jobId"
@@ -85,11 +85,8 @@ import {
   VBtn,
   VDialog,
 } from 'vuetify/lib';
-import config from 'config';
-import axios from 'axios';
+import { mapState } from 'vuex';
 import CreateEditJobForm from './CreateEditJobForm.vue';
-
-const { baseUrl } = config.api;
 
 export default {
   name: 'JobComponent',
@@ -120,7 +117,6 @@ export default {
         { text: 'Last Update', value: 'lastUpdate' },
         { text: 'Actions', value: 'action', sortable: false },
       ],
-      jobQueue: [{ id: '12', status: 'todo', lastUpdate: '23/12/19' }],
       currentJobSettings: null,
       currentJobId: null,
       jobInterval: null,
@@ -128,18 +124,23 @@ export default {
   },
 
   created() {
-    this.fetchJobs().catch(() => {});
+    this.$store.dispatch('loadJobs');
 
     this.jobInterval = setInterval(() => {
-      this.fetchJobs();
+      this.$store.dispatch('loadJobs');
     }, 10000);
   },
+
+  computed: mapState([
+    'jobs',
+    'jobSettings',
+  ]),
 
   methods: {
     async handleEditJobIconClick(job) {
       try {
-        const jobSettings = await this.fetchJobSettings(job.id);
-        this.currentJobSettings = jobSettings.data;
+        await this.$store.dispatch('fetchJobSettings', job.id);
+        this.currentJobSettings = this.jobSettings;
         this.currentJobId = job.id;
         this.isEditJobModalOpen = true;
       // eslint-disable-next-line no-empty
@@ -152,8 +153,7 @@ export default {
 
       if (res) {
         try {
-          await this.deleteJob(job.id);
-          await this.fetchJobs();
+          await this.$store.dispatch('deleteJob', job.id);
         // eslint-disable-next-line no-empty
         } catch (e) {
         }
@@ -170,14 +170,13 @@ export default {
 
     async handleNewJobFormSave(job) {
       try {
-        await this.addJob({
+        await this.$store.dispatch('addJob', {
           Bitrate: job.Bitrate,
           Framerate: job.Framerate,
           Codec: job.Codec,
         });
 
         this.isNewJobModalOpen = false;
-        await this.fetchJobs();
       // eslint-disable-next-line no-empty
       } catch (e) {
       }
@@ -189,66 +188,18 @@ export default {
 
     async handleEditJobFormSave(attributes, id) {
       try {
-        await this.editJob(id, {
-          Bitrate: attributes.Bitrate,
-          Framerate: attributes.Framerate,
-          Codec: attributes.Codec,
+        await this.$store.dispatch('editJob', {
+          id,
+          attributes: {
+            Bitrate: attributes.Bitrate,
+            Framerate: attributes.Framerate,
+            Codec: attributes.Codec,
+          },
         });
 
         this.isEditJobModalOpen = false;
-        await this.fetchJobs();
       // eslint-disable-next-line no-empty
       } catch (e) {
-      }
-    },
-
-    async fetchJobs() {
-      try {
-        const response = await axios.get(`${baseUrl}/api/getJobs`);
-
-        if (response) {
-          this.jobQueue = response.data;
-        } else {
-          throw new Error('Resoponse is empty');
-        }
-      } catch (e) {
-        throw new Error('Can not fetch jobs list');
-      }
-    },
-
-    async fetchJobSettings(id) {
-      try {
-        const response = await axios.get(`${baseUrl}/api/getOptions/${id}`);
-        if (response) {
-          return response;
-        }
-        throw new Error('Resoponse is empty');
-      } catch (e) {
-        throw new Error('Can not fetch job settings');
-      }
-    },
-
-    async addJob(job) {
-      try {
-        await axios.post(`${baseUrl}/api/job`, job);
-      } catch (e) {
-        throw new Error(e.message);
-      }
-    },
-
-    async deleteJob(id) {
-      try {
-        await axios.delete(`${baseUrl}/api/job/${id}`);
-      } catch (e) {
-        throw new Error(`Can not delete job ${id}`);
-      }
-    },
-
-    async editJob(id, attributes) {
-      try {
-        await axios.post(`${baseUrl}/api/updateJob/${id}`, attributes);
-      } catch (e) {
-        throw new Error(e.message);
       }
     },
   },

@@ -99,11 +99,8 @@ import {
   VCheckbox,
   VDialog,
 } from 'vuetify/lib';
-import axios from 'axios';
-import config from 'config';
+import { mapState } from 'vuex';
 import CreateEditProfileForm from './CreateEditProfileForm.vue';
-
-const { baseUrl } = config.api;
 
 export default {
   name: 'ProfileComponent',
@@ -134,22 +131,31 @@ export default {
         { text: 'Default', value: 'default' },
         { text: 'Actions', value: 'action', sortable: false },
       ],
-      profiles: [{ id: 0, name: 'First profile' }, { id: 1, name: 'Second profile' }],
       defaultProfile: [],
       currentProfileJobSettings: null,
       currentProfileId: null,
+      profileInterval: null,
     };
   },
 
   created() {
-    this.fetchProfiles();
+    this.$store.dispatch('loadProfiles');
+
+    this.jobInterval = setInterval(() => {
+      this.$store.dispatch('loadProfiles');
+    }, 10000);
   },
+
+  computed: mapState([
+    'profiles',
+    'profileJobSettings',
+  ]),
 
   methods: {
     async handleEditProfileIconClick(profile) {
       try {
-        const jobSettings = await this.fetchProfileJobSettings(profile.id);
-        this.currentProfileJobSettings = { Name: profile.name, Options: jobSettings.data };
+        await this.$store.dispatch('fetchProfileJobSettings', profile.id);
+        this.currentProfileJobSettings = { Name: profile.name, Options: this.profileJobSettings };
         this.currentProfileId = profile.id;
         this.isEditProfileModalOpen = true;
       // eslint-disable-next-line no-empty
@@ -163,8 +169,7 @@ export default {
 
       if (res) {
         try {
-          await this.deleteProfile(profile.id);
-          await this.fetchProfiles();
+          await this.$store.dispatch('deleteProfile', profile.id);
         // eslint-disable-next-line no-empty
         } catch (e) {
         }
@@ -194,9 +199,8 @@ export default {
             Codec: profile.Options.Codec,
           },
         };
-        await this.editProfile(profileData);
+        await this.$store.dispatch('editProfile', profileData);
         this.isEditProfileModalOpen = false;
-        await this.fetchProfiles();
       // eslint-disable-next-line no-empty
       } catch (e) {
       }
@@ -204,78 +208,18 @@ export default {
 
     async handleNewProfileFormSave(profile) {
       try {
-        await this.addProfile({
-          Bitrate: profile.Options.Bitrate,
-          Framerate: profile.Options.Framerate,
-          Codec: profile.Options.Codec,
-        }, profile.Name);
+        await this.$store.dispatch('addProfile', {
+          Options: {
+            Bitrate: profile.Options.Bitrate,
+            Framerate: profile.Options.Framerate,
+            Codec: profile.Options.Codec,
+          },
+          Name: profile.Name,
+        });
 
         this.isNewProfileModalOpen = false;
-        await this.fetchProfiles();
       // eslint-disable-next-line no-empty
       } catch (e) {
-      }
-    },
-
-    async fetchProfiles() {
-      try {
-        const response = await axios.get(`${baseUrl}/api/getProfiles`);
-
-        if (response) {
-          this.profiles = response.data;
-        } else {
-          throw new Error('Resoponse is empty');
-        }
-      } catch (e) {
-        throw new Error('Can not fetch profiles list');
-      }
-    },
-
-    async addProfile(jobOptions, name) {
-      try {
-        await axios.post(`${baseUrl}/api/profile/${name}`, jobOptions);
-      } catch (e) {
-        throw new Error(e.message);
-      }
-    },
-
-    async deleteProfile(id) {
-      try {
-        await axios.delete(`${baseUrl}/api/profile/${id}`);
-      } catch (e) {
-        throw new Error(`Can not delete profile ${id}`);
-      }
-    },
-
-    async editProfile(profile) {
-      try {
-        await axios.post(`${baseUrl}/api/updateProfile`, profile);
-      } catch (e) {
-        throw new Error(e.message);
-      }
-    },
-
-    async fetchProfileJobSettings(id) {
-      try {
-        const response = await axios.get(`${baseUrl}/api/getProfileOptions/${id}`);
-        if (response) {
-          return response;
-        }
-        throw new Error('Resoponse is empty');
-      } catch (e) {
-        throw new Error('Can not fetch job settings');
-      }
-    },
-
-    async getProfile(id) {
-      try {
-        const response = await axios.get(`${baseUrl}/api/getProfile/${id}`);
-        if (response) {
-          return response;
-        }
-        throw new Error('Response is empty');
-      } catch (e) {
-        throw new Error('Cannot fetch profile');
       }
     },
   },
