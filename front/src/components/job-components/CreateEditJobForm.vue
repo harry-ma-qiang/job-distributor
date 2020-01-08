@@ -97,7 +97,6 @@ export default {
   },
 
   created() {
-    console.log(`Job Id: ${this.jobId}`);
     this.$store.dispatch('loadProfiles').then(() => {
       if (!this.jobId) {
         const defaultProfileId = parseInt(window.localStorage.getItem('defaultProfileId'), 10);
