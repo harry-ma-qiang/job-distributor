@@ -97,13 +97,16 @@ export default {
   },
 
   created() {
+    console.log(`Job Id: ${this.jobId}`);
     this.$store.dispatch('loadProfiles').then(() => {
-      const defaultProfileId = parseInt(window.localStorage.getItem('defaultProfileId'), 10);
+      if (!this.jobId) {
+        const defaultProfileId = parseInt(window.localStorage.getItem('defaultProfileId'), 10);
 
-      if (defaultProfileId !== 'undefined' && defaultProfileId) {
-        this.selectedProfile = this.getProfileById(defaultProfileId);
-        if (this.selectedProfile) {
-          this.setJobSettingsFromProfile(this.selectedProfile.id);
+        if (defaultProfileId !== 'undefined' && defaultProfileId) {
+          this.selectedProfile = this.getProfileById(defaultProfileId);
+          if (this.selectedProfile) {
+            this.setJobSettingsFromProfile(this.selectedProfile.id);
+          }
         }
       }
     });
