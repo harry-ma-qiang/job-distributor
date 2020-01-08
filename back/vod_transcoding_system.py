@@ -174,5 +174,7 @@ if __name__ == '__main__':
 
     if len(argv) == 2:
         app.run(port=int(argv[1]))
+    elif len(argv) == 3:
+        app.run(port=int(argv[1]), host=argv[2])
     else:
         app.run()
