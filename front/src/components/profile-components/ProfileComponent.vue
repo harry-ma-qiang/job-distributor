@@ -60,6 +60,7 @@
                 :value="item.id"
                 v-model="defaultProfile"
                 :disabled="defaultProfile.length > 0 && item.id != defaultProfile[0]"
+                @change="handleDefaultProfileCheckBoxChange(item)"
             >
             </v-checkbox>
           </template>
@@ -139,6 +140,11 @@ export default {
   },
 
   created() {
+    const defaultProfileId = parseInt(window.localStorage.getItem('defaultProfileId'), 10);
+    if (defaultProfileId !== 'undefined' && defaultProfileId) {
+      this.defaultProfile = [defaultProfileId];
+    }
+
     this.$store.dispatch('loadProfiles');
 
     this.jobInterval = setInterval(() => {
@@ -221,6 +227,10 @@ export default {
       // eslint-disable-next-line no-empty
       } catch (e) {
       }
+    },
+
+    handleDefaultProfileCheckBoxChange() {
+      window.localStorage.setItem('defaultProfileId', this.defaultProfile[0]);
     },
   },
 };

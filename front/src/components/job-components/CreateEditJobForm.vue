@@ -44,7 +44,7 @@ import {
   VCard, VCardTitle, VCardText, VContainer, VRow, VCol, VTextField,
   VCardActions, VSpacer, VBtn, VFlex, VCombobox,
 } from 'vuetify/lib';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'CreateEditJobForm',
@@ -78,6 +78,17 @@ export default {
     },
   },
 
+  computed: {
+    ...mapGetters([
+      'getProfileById',
+    ]),
+
+    ...mapState([
+      'profiles',
+      'profileJobSettings',
+    ]),
+  },
+
   data() {
     return {
       job: this.defaultJob,
@@ -86,13 +97,17 @@ export default {
   },
 
   created() {
-    this.$store.dispatch('loadProfiles');
-  },
+    this.$store.dispatch('loadProfiles').then(() => {
+      const defaultProfileId = parseInt(window.localStorage.getItem('defaultProfileId'), 10);
 
-  computed: mapState([
-    'profiles',
-    'profileJobSettings',
-  ]),
+      if (defaultProfileId !== 'undefined' && defaultProfileId) {
+        this.selectedProfile = this.getProfileById(defaultProfileId);
+        if (this.selectedProfile) {
+          this.setJobSettingsFromProfile(this.selectedProfile.id);
+        }
+      }
+    });
+  },
 
   methods: {
     closeForm() {
@@ -103,13 +118,21 @@ export default {
       this.$emit('save', this.job, this.jobId);
     },
 
-    async handleChangeProfileComboboxValue(profile) {
+    async setJobSettingsFromProfile(profileId) {
       try {
-        await this.$store.dispatch('fetchProfileJobSettings', profile.id);
-        console.log(this.profileJobSettings);
+        await this.$store.dispatch('fetchProfileJobSettings', profileId);
         if (this.profileJobSettings) {
           this.job = this.profileJobSettings;
         }
+        // eslint-disable-next-line no-empty
+      } catch (e) {
+
+      }
+    },
+
+    async handleChangeProfileComboboxValue(profile) {
+      try {
+        await this.setJobSettingsFromProfile(profile.id);
         // eslint-disable-next-line no-empty
       } catch (e) {
 

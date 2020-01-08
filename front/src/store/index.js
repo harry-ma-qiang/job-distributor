@@ -19,7 +19,7 @@ export default new Vuex.Store({
   },
 
   getters: {
-
+    getProfileById: state => id => state.profiles.find(profile => profile.id === id),
   },
 
   mutations: {
