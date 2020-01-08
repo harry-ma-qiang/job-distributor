@@ -56,7 +56,7 @@ def fetch_job():
     with lock:
         job = next((j for j in db_management.getJobs() if j.status == JobStatuses[0]), None)
         if not job:
-            result = {'code': 400, 'msg': "The queue is empty."}
+            result = {'code': 400, 'msg': "The queue is empty.", "result": False}
             return jsonify(result), result['code']
         else:
             job_options = db_management.getJobOptionsByJobId(job.id)
@@ -91,14 +91,14 @@ def delete_job(jobId):
             .format(jobId), "result": True}), 404
     else:
         db_management.deleteJob(jobId)
-        return jsonify({"code": 200, "msg": "Job has deleted.", "result": True}), 200
+        return jsonify({"code": 200, "msg": "Job has been deleted.", "result": True}), 200
 
 
 @app.route('/api/profile/<profileId>', methods=['DELETE'])
 def delete_profile(profileId):
     if is_profile_exist(profileId):
         return jsonify({"code": 404, "msg": "Profile with such id:{} doesn't exist."
-            .format(profileId), "result": True}), 404
+            .format(profileId), "result": False}), 404
     else:
         db_management.deleteProfile(profileId)
         return jsonify({"code": 200, "msg": "Profile has deleted.", "result": True}), 200
