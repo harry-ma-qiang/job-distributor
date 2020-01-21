@@ -53,8 +53,8 @@ import {
   VToolbarTitle, VSpacer, VBtn, VIcon, VAppBar, VContent,
   VApp, VAppBarNavIcon, VTabs, VTab, VTabsItems, VTabItem,
 } from 'vuetify/lib';
-import JobComponent from './job-components/JobComponent.vue';
-import ProfileComponent from './profile-components/ProfileComponent.vue';
+import JobComponent from './content/job-components/JobComponent.vue';
+import ProfileComponent from './content/profile-components/ProfileComponent.vue';
 import LeftMenu from './LeftMenu.vue';
 
 export default {

@@ -33,24 +33,32 @@
         nav
         dense
       >
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-information</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>User Information</v-list-item-title>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-settings</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>Settings</v-list-item-title>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-login</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>Log in</v-list-item-title>
-        </v-list-item>
+        <router-link to="/">
+          <v-list-item link>
+              <v-list-item-icon>
+                <v-icon>mdi-information</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>User Information</v-list-item-title>
+            </v-list-item>
+        </router-link>
+
+        <router-link to="/">
+          <v-list-item link>
+            <v-list-item-icon>
+              <v-icon>mdi-settings</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Settings</v-list-item-title>
+          </v-list-item>
+        </router-link>
+
+        <router-link to="/login-signup">
+          <v-list-item link>
+            <v-list-item-icon>
+              <v-icon>mdi-login</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Log in</v-list-item-title>
+          </v-list-item>
+        </router-link>
       </v-list>
     </v-navigation-drawer>
 </template>
@@ -91,5 +99,7 @@ export default {
 </script>
 
 <style>
-
+  a {
+    text-decoration: none;
+}
 </style>
