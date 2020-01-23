@@ -5,17 +5,19 @@ __DBNAME__ = ""
 
 
 class Job:
-    def __init__(self, job_id, status, lastUpdate):
+    def __init__(self, job_id, status, lastUpdate, name):
         self.id = job_id
         self.status = status
         self.lastUpdate = lastUpdate
+        self.name = name
 
 
 class Option:
-    def __init__(self, option_id, key, name):
+    def __init__(self, option_id, key, name, is_optional):
         self.id = option_id
         self.key = key
         self.name = name
+        self.is_optional = is_optional
 
 
 class JobOption:
@@ -46,10 +48,10 @@ def getOptions():
     options = []
     with sqlite3.connect(__DBNAME__) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT ID, Key, Name FROM Option")
+        cursor.execute("SELECT ID, Key, Name, Optional FROM Option")
 
         for option in cursor.fetchall():
-            options.append(Option(option[0], option[1], option[2]))
+            options.append(Option(option[0], option[1], option[2], option[3]))
 
     return options
 
@@ -58,10 +60,10 @@ def getJobs():
     jobs = []
     with sqlite3.connect(__DBNAME__) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT ID, Worker, LastUpdate FROM Job")
+        cursor.execute("SELECT ID, Worker, LastUpdate, Name FROM Job")
 
         for job in cursor.fetchall():
-            jobs.append(Job(job[0], job[1], job[2]))
+            jobs.append(Job(job[0], job[1], job[2], job[3]))
 
     return jobs
 
@@ -136,13 +138,13 @@ def addProfile(job_options, profile_name):
         return profile_id
 
 
-def addJob(job_options):
+def addJob(job_options, name):
     with sqlite3.connect(__DBNAME__) as conn:
         try:
             now = currentDatetime()
             cursor = conn.cursor()
             # add new job
-            cursor.execute("INSERT INTO Job (LastUpdate) VALUES(?)", (now,))
+            cursor.execute("INSERT INTO Job (LastUpdate, Name) VALUES(?, ?)", (now, name))
             job_id = cursor.lastrowid
 
             # add new job option

@@ -61,7 +61,14 @@ def fetch_job():
         else:
             job_options = db_management.getJobOptionsByJobId(job.id)
             result = dict((j.key, j.value) for j in job_options)
+
             result.update({'jobId': job.id})
+            result.update({'service': 'encode'})
+            result.update({'name': job.name})
+            result.update({'enable': '1'})
+            result.update({'version': Version})
+            result.update({'config': request.host_url + 'api/getAttributes'})
+            result.update({'status': request.host_url + 'api/updateJob'})
 
             db_management.changeJobStatus(job.id, JobStatuses[1])
 
@@ -70,8 +77,8 @@ def fetch_job():
 
 @app.route('/api/job', methods=['POST'])
 def add_job():
-    job_options = request.get_json(force=True)
-    db_management.addJob([db_management.JobOption(key, job_options[key]) for key in job_options])
+    job = request.get_json(force=True)
+    db_management.addJob([db_management.JobOption(key, job["Options"][key]) for key in job["Options"]], job["Name"])
 
     return jsonify({"code": 200, "msg": "Job has been added.", "result": True})
 
