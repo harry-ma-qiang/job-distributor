@@ -112,7 +112,8 @@ export default {
       isEditJobModalOpen: false,
       search: '',
       headers: [
-        { text: 'Job Id', value: 'id' },
+        { text: 'Id', value: 'id' },
+        { text: 'Name', value: 'name' },
         { text: 'Status', value: 'status' },
         { text: 'Last Update', value: 'lastUpdate' },
         { text: 'Actions', value: 'action', sortable: false },
