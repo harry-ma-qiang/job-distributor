@@ -140,6 +140,14 @@ def get_job_options(job_id):
     return jsonify(result), 200
 
 
+@app.route('/api/getOptions', methods=['GET'])
+def get_options():
+    options = db_management.getOptions()
+    option_dict = [ob.__dict__ for ob in options]
+
+    return jsonify(option_dict), 200
+
+
 @app.route('/api/getProfileOptions/<profile_id>', methods=['GET'])
 def get_profile_options(profile_id):
     job_options = db_management.getJobOptionsByProfileId(profile_id)
