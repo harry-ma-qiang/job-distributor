@@ -23,19 +23,11 @@
                 </v-flex>
               </v-row>
               <div class="scroll-container">
-                <v-container>
-                  <v-row v-for="i in getNumberInputRows()"
-                  v-bind:key="i">
-                      <v-col v-for="s in getColumnNumberRange(i)" v-bind:key="s"
-                      cols="12" sm="6" md="6">
-                        <v-text-field
-                        v-if="getNumberOfJobSettings() > s"
-                        v-model="jobSettings[Object.keys(jobSettings)[s]]"
-                        :label="getNameOfSettingByKey(Object.keys(jobSettings)[s])">
-                        </v-text-field>
-                      </v-col>
-                  </v-row>
-                </v-container>
+                <JobInputsFormGenerator
+                :default-settings="settings"
+                :default-job-settings="jobSettings"
+                :default-number-columns-per-row="2"
+                @change="handleJobInputsFormGeneratorChange" />
               </div>
             </v-container>
         </v-card-text>
@@ -49,10 +41,11 @@
 
 <script>
 import {
-  VCard, VCardTitle, VCardText, VContainer, VRow, VCol, VTextField,
+  VCard, VCardTitle, VCardText, VContainer, VRow, VTextField,
   VCardActions, VSpacer, VBtn, VFlex, VCombobox,
 } from 'vuetify/lib';
 import { mapState, mapGetters } from 'vuex';
+import JobInputsFormGenerator from '../JobInputsFormGenerator.vue';
 
 export default {
   name: 'CreateEditJobForm',
@@ -62,13 +55,13 @@ export default {
     VCardText,
     VContainer,
     VRow,
-    VCol,
     VTextField,
     VCardActions,
     VSpacer,
     VBtn,
     VFlex,
     VCombobox,
+    JobInputsFormGenerator,
   },
 
   props: {
@@ -130,10 +123,6 @@ export default {
   },
 
   methods: {
-    range(start, end) {
-      return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
-    },
-
     closeForm() {
       this.$emit('close');
     },
@@ -142,12 +131,15 @@ export default {
       this.$emit('save', this.jobSettings, this.jobName, this.job.id);
     },
 
+    handleJobInputsFormGeneratorChange(jobSettings) {
+      this.jobSettings = jobSettings;
+    },
+
     async setJobSettingsFromProfile(profileId) {
       try {
         await this.$store.dispatch('fetchProfileJobSettings', profileId);
         if (this.profileJobSettings) {
           this.jobSettings = Object.assign({}, this.jobSettings, this.profileJobSettings);
-          console.log(this.jobSettings);
         }
         // eslint-disable-next-line no-empty
       } catch (e) {
@@ -162,29 +154,6 @@ export default {
       } catch (e) {
 
       }
-    },
-
-    getNumberInputRows() {
-      return Array.from(Array(
-        Math.ceil(Object.keys(this.jobSettings).length / this.numberColumnsPerRow),
-      ).keys());
-    },
-
-    getColumnNumberRange(number) {
-      return this.range(number * this.numberColumnsPerRow, number * this.numberColumnsPerRow + 1);
-    },
-
-    getNumberOfJobSettings() {
-      return Object.keys(this.jobSettings).length;
-    },
-
-    getNameOfSettingByKey(key) {
-      const setting = this.settings.find(x => x.key === key);
-      return setting ? setting.name : '';
-    },
-
-    getJobSettingByOrderNumber(number) {
-      return this.jobSettings[Object.keys(this.jobSettings)[number]];
     },
   },
 };
