@@ -16,10 +16,14 @@ export default new Vuex.Store({
 
     profiles: [],
     profileJobSettings: null,
+
+    settings: [],
   },
 
   getters: {
     getProfileById: state => id => state.profiles.find(profile => profile.id === id),
+    getOptionalSettings: state => state.settings.filter(s => s.is_optional),
+    getNoneOptionalSettings: state => state.settings.filter(s => !s.is_optional),
   },
 
   mutations: {
@@ -47,6 +51,10 @@ export default new Vuex.Store({
 
     SET_PROFILE_JOB_SETTINGS(state, profileJobSettings) {
       state.profileJobSettings = profileJobSettings;
+    },
+
+    SET_SETTINGS(state, settings) {
+      state.settings = settings;
     },
   },
 
@@ -90,7 +98,7 @@ export default new Vuex.Store({
 
     async editJob({ dispatch }, payload) {
       try {
-        await axios.post(`${baseUrl}/api/updateJob/${payload.id}`, payload.attributes);
+        await axios.post(`${baseUrl}/api/updateJob/${payload.id}`, payload.data);
         dispatch('loadJobs');
       } catch (e) {
         throw new Error(e.message);
@@ -159,6 +167,20 @@ export default new Vuex.Store({
         dispatch('loadProfiles');
       } catch (e) {
         throw new Error(e.message);
+      }
+    },
+
+    async loadSettings() {
+      try {
+        const response = await axios.get(`${baseUrl}/api/getOptions`);
+
+        if (response) {
+          this.commit('SET_SETTINGS', response.data);
+        } else {
+          throw new Error('Resoponse is empty');
+        }
+      } catch (e) {
+        throw new Error('Can not fetch options list');
       }
     },
   },

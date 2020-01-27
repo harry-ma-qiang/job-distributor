@@ -42,8 +42,8 @@
                 max-width="500px">
                 <CreateEditJobForm
                   title="Edit job"
-                  :default-job="currentJobSettings"
-                  :job-id="currentJobId"
+                  :default-job-settings="currentJobSettings"
+                  :job="currentJob"
                   @close = "handleEditJobFormClose"
                   @save = "handleEditJobFormSave"
                 />
@@ -119,7 +119,7 @@ export default {
         { text: 'Actions', value: 'action', sortable: false },
       ],
       currentJobSettings: null,
-      currentJobId: null,
+      currentJob: null,
       jobInterval: null,
     };
   },
@@ -142,7 +142,7 @@ export default {
       try {
         await this.$store.dispatch('fetchJobSettings', job.id);
         this.currentJobSettings = this.jobSettings;
-        this.currentJobId = job.id;
+        this.currentJob = job;
         this.isEditJobModalOpen = true;
       // eslint-disable-next-line no-empty
       } catch (e) {
@@ -169,12 +169,11 @@ export default {
       this.isNewJobModalOpen = false;
     },
 
-    async handleNewJobFormSave(job) {
+    async handleNewJobFormSave(jobSettings, jobName) {
       try {
         await this.$store.dispatch('addJob', {
-          Bitrate: job.Bitrate,
-          Framerate: job.Framerate,
-          Codec: job.Codec,
+          Options: jobSettings,
+          Name: jobName,
         });
 
         this.isNewJobModalOpen = false;
@@ -187,14 +186,13 @@ export default {
       this.isEditJobModalOpen = false;
     },
 
-    async handleEditJobFormSave(attributes, id) {
+    async handleEditJobFormSave(jobSettings, jobName, id) {
       try {
         await this.$store.dispatch('editJob', {
           id,
-          attributes: {
-            Bitrate: attributes.Bitrate,
-            Framerate: attributes.Framerate,
-            Codec: attributes.Codec,
+          data: {
+            Options: jobSettings,
+            Name: jobName,
           },
         });
 

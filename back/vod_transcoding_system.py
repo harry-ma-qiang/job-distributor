@@ -78,6 +78,7 @@ def fetch_job():
 @app.route('/api/job', methods=['POST'])
 def add_job():
     job = request.get_json(force=True)
+    print(job)
     db_management.addJob([db_management.JobOption(key, job["Options"][key]) for key in job["Options"]], job["Name"])
 
     return jsonify({"code": 200, "msg": "Job has been added.", "result": True})
@@ -158,9 +159,9 @@ def get_profile_options(profile_id):
 
 @app.route('/api/updateJob/<job_id>', methods=['GET', 'POST'])
 def update_job(job_id):
-    job_options = request.get_json(force=True)
-    options = [db_management.JobOption(key, job_options[key]) for key in job_options]
-    db_management.updateJob(job_id, options)
+    job = request.get_json(force=True)
+    options = [db_management.JobOption(key, job["Options"][key]) for key in job["Options"]]
+    db_management.updateJob(job_id, job["Name"], options)
 
     return jsonify({"code": 200, "msg": "Job has been updated.", "result": True}), 200
 

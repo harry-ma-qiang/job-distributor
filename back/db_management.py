@@ -177,7 +177,7 @@ def updateProfile(profile, job_options):
             conn.commit()
 
 
-def updateJob(jobId, job_options):
+def updateJob(jobId, name, job_options):
     with sqlite3.connect(__DBNAME__) as conn:
         now = currentDatetime()
         try:
@@ -186,7 +186,7 @@ def updateJob(jobId, job_options):
             cursor.executemany("INSERT OR REPLACE INTO JobOptionValues (OptionID, JobID, Value) VALUES (?,?,?)",
                                [(next(o.id for o in options if o.key == job_option.key), jobId, job_option.value)
                                 for job_option in job_options])
-            cursor.execute("UPDATE Job SET LastUpdate = ? WHERE ID = ?", (now, jobId))
+            cursor.execute("UPDATE Job SET LastUpdate = ?, Name = ? WHERE ID = ?", (now, name, jobId))
         except Exception as e:
             conn.rollback()
             raise e
