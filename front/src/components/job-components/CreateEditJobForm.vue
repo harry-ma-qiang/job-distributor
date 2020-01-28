@@ -112,9 +112,7 @@ export default {
         }
       });
 
-      this.$store.dispatch('loadSettings').then(() => {
-        this.getNoneOptionalSettings.forEach((s) => { this.$set(this.jobSettings, s.key, ''); });
-      });
+      this.setDefaultJobSettings();
     } else {
       this.$store.dispatch('loadSettings');
     }
@@ -127,6 +125,12 @@ export default {
 
     saveForm() {
       this.$emit('save', this.jobSettings, this.jobName, this.job.id);
+    },
+
+    setDefaultJobSettings() {
+      this.$store.dispatch('loadSettings').then(() => {
+        this.getNoneOptionalSettings.forEach((s) => { this.$set(this.jobSettings, s.key, ''); });
+      });
     },
 
     handleJobInputsFormGeneratorChange(jobSettings) {
@@ -146,11 +150,16 @@ export default {
     },
 
     async handleChangeProfileComboboxValue(profile) {
-      try {
-        await this.setJobSettingsFromProfile(profile.id);
+      if (profile) {
+        try {
+          await this.setJobSettingsFromProfile(profile.id);
         // eslint-disable-next-line no-empty
-      } catch (e) {
+        } catch (e) {
 
+        }
+      } else {
+        this.jobSettings = {};
+        this.setDefaultJobSettings();
       }
     },
   },

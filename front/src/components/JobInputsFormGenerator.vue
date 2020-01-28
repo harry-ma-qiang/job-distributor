@@ -41,6 +41,12 @@ export default {
     },
   },
 
+  watch: {
+    defaultJobSettings(newVal) {
+      this.jobSettings = newVal;
+    },
+  },
+
   computed: {
     ...mapState([
       'settings',
