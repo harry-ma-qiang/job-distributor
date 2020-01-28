@@ -45,7 +45,7 @@
                 v-if="isEditProfileModalOpen"
                 max-width="500px">
                 <CreateEditProfileForm
-                  title="Edit job"
+                  title="Edit Profile"
                   :default-profile="currentProfileJobSettings"
                   :profile-id="currentProfileId"
                   @close = "handleEditProfileFormClose"
@@ -199,11 +199,7 @@ export default {
         const profileData = {
           Id: profileId,
           Name: profile.Name,
-          Options: {
-            Bitrate: profile.Options.Bitrate,
-            Framerate: profile.Options.Framerate,
-            Codec: profile.Options.Codec,
-          },
+          Options: profile.Options,
         };
         await this.$store.dispatch('editProfile', profileData);
         this.isEditProfileModalOpen = false;
@@ -215,11 +211,7 @@ export default {
     async handleNewProfileFormSave(profile) {
       try {
         await this.$store.dispatch('addProfile', {
-          Options: {
-            Bitrate: profile.Options.Bitrate,
-            Framerate: profile.Options.Framerate,
-            Codec: profile.Options.Codec,
-          },
+          Options: profile.Options,
           Name: profile.Name,
         });
 

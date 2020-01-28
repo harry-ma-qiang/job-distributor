@@ -24,7 +24,6 @@
               </v-row>
               <div class="scroll-container">
                 <JobInputsFormGenerator
-                :default-settings="settings"
                 :default-job-settings="jobSettings"
                 :default-number-columns-per-row="2"
                 @change="handleJobInputsFormGeneratorChange" />
@@ -87,7 +86,6 @@ export default {
 
     ...mapState([
       'profiles',
-      'settings',
       'profileJobSettings',
     ]),
   },

@@ -7,8 +7,8 @@
             <v-text-field
             @change="handleTextFieldChange"
             v-if="getNumberOfJobSettings() > s"
-            v-model="jobSettings[Object.keys(jobSettings)[s]]"
-            :label="getNameOfSettingByKey(Object.keys(jobSettings)[s])">
+            v-model="jobSettings[getJobSettingsKeys()[s]]"
+            :label="getNameOfSettingByKey(getJobSettingsKeys()[s])">
             </v-text-field>
             </v-col>
         </v-row>
@@ -19,6 +19,7 @@
 import {
   VContainer, VRow, VCol, VTextField,
 } from 'vuetify/lib';
+import { mapState } from 'vuex';
 
 export default {
   name: 'CreateEditJobForm',
@@ -30,10 +31,6 @@ export default {
   },
 
   props: {
-    defaultSettings: {
-      type: Array,
-      default: () => [],
-    },
     defaultJobSettings: {
       type: Object,
       default: () => ({}),
@@ -44,10 +41,19 @@ export default {
     },
   },
 
+  computed: {
+    ...mapState([
+      'settings',
+    ]),
+  },
+
+  created() {
+    this.$store.dispatch('loadSettings');
+  },
+
   data() {
     return {
       jobSettings: this.defaultJobSettings,
-      settings: this.defaultSettings,
       numberColumnsPerRow: this.defaultNumberColumnsPerRow,
     };
   },
@@ -57,9 +63,14 @@ export default {
       return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
     },
 
+    getJobSettingsKeys() {
+      const jobSettings = JSON.parse(JSON.stringify(this.jobSettings));
+      return Object.keys(jobSettings);
+    },
+
     getNumberInputRows() {
       return Array.from(Array(
-        Math.ceil(Object.keys(this.jobSettings).length / this.numberColumnsPerRow),
+        Math.ceil(this.getNumberOfJobSettings() / this.numberColumnsPerRow),
       ).keys());
     },
 
@@ -68,11 +79,14 @@ export default {
     },
 
     getNumberOfJobSettings() {
-      return Object.keys(this.jobSettings).length;
+      const jobSettings = JSON.parse(JSON.stringify(this.jobSettings));
+
+      return Object.keys(jobSettings).length;
     },
 
     getNameOfSettingByKey(key) {
       const setting = this.settings.find(x => x.key === key);
+
       return setting ? setting.name : '';
     },
 

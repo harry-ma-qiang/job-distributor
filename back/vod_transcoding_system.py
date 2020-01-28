@@ -170,6 +170,7 @@ def update_job(job_id):
 def update_profile():
     profile = request.get_json(force=True)
     options = [db_management.JobOption(key, profile["Options"][key]) for key in profile["Options"]]
+    print(options)
     db_management.updateProfile(db_management.Profile(profile["Id"], profile["Name"]), options)
 
     return jsonify({"code": 200, "msg": "Profile has been updated.", "result": True}), 200

@@ -5,28 +5,19 @@
         </v-card-title>
 
         <v-card-text>
-            <v-container>
+          <v-container>
             <v-row>
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field v-model="profile.Name" label="Name"></v-text-field>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="profile.Options.Bitrate" label="Bit rate"></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field
-                    v-model="profile.Options.Framerate"
-                    label="Frame rate"
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="profile.Options.Codec" label="Codec"></v-text-field>
-                </v-col>
-            </v-row>
-            </v-container>
+            <div class="scroll-container">
+              <JobInputsFormGenerator
+              :default-job-settings="profile.Options"
+              :default-number-columns-per-row="2"
+              @change="handleJobInputsFormGeneratorChange" />
+            </div>
+          </v-container>
         </v-card-text>
 
         <v-card-actions>
@@ -41,6 +32,8 @@
 import {
   VCard, VCardTitle, VCardText, VContainer, VRow, VCol, VTextField, VCardActions, VSpacer, VBtn,
 } from 'vuetify/lib';
+import { mapGetters } from 'vuex';
+import JobInputsFormGenerator from '../JobInputsFormGenerator.vue';
 
 export default {
   name: 'CreateEditProfileForm',
@@ -55,6 +48,7 @@ export default {
     VCardActions,
     VSpacer,
     VBtn,
+    JobInputsFormGenerator,
   },
 
   props: {
@@ -65,7 +59,7 @@ export default {
     defaultProfile: {
       type: Object,
       default: () => ({
-        Name: '', Options: { Bitrate: '', Framerate: '', Codec: '' },
+        Name: '', Options: { type: Object, default: () => ({}) },
       }),
     },
     profileId: {
@@ -74,10 +68,26 @@ export default {
     },
   },
 
+  computed: {
+    ...mapGetters([
+      'getNoneOptionalSettings',
+    ]),
+  },
+
   data() {
     return {
       profile: this.defaultProfile,
     };
+  },
+
+  created() {
+    if (!this.profile.Name) {
+      this.$store.dispatch('loadSettings').then(() => {
+        this.getNoneOptionalSettings.forEach((s) => { this.$set(this.profile.Options, s.key, ''); });
+      });
+    } else {
+      this.$store.dispatch('loadSettings');
+    }
   },
 
   methods: {
@@ -87,6 +97,10 @@ export default {
 
     saveForm() {
       this.$emit('save', this.profile, this.profileId);
+    },
+
+    handleJobInputsFormGeneratorChange(jobSettings) {
+      this.profile.Options = jobSettings;
     },
   },
 };
