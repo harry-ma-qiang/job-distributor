@@ -17,7 +17,7 @@ export default new Vuex.Store({
     profiles: [],
     profileJobSettings: null,
 
-    settings: [],
+    settings: null,
   },
 
   getters: {

@@ -17,6 +17,14 @@ Vue.use(Vuetify);
 
 Vue.config.productionTip = false;
 
+Vue.mixin({
+  methods: {
+    range(start, end) {
+      return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
+    },
+  },
+});
+
 new Vue({
   store,
   render: h => h(App),

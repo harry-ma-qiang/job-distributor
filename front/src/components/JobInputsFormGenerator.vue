@@ -1,9 +1,11 @@
 <template>
     <v-container>
-        <v-row v-for="i in getNumberInputRows()"
-        v-bind:key="i">
+        <div v-if="!settings">Loading Please wait...</div>
+        <div v-else>
+          <v-row v-for="i in getNumberInputRows()"
+          v-bind:key="i">
             <v-col v-for="s in getColumnNumberRange(i)" v-bind:key="s"
-            cols="12" sm="6" md="6">
+            cols="12" :sm="12/defaultNumberColumnsPerRow" :md="12/defaultNumberColumnsPerRow">
             <v-text-field
             @change="handleTextFieldChange"
             v-if="getNumberOfJobSettings() > s"
@@ -12,6 +14,7 @@
             </v-text-field>
             </v-col>
         </v-row>
+        </div>
     </v-container>
 </template>
 
@@ -38,6 +41,9 @@ export default {
     defaultNumberColumnsPerRow: {
       type: Number,
       default: 2,
+      validator(value) {
+        return value <= 4 && value > 0;
+      },
     },
   },
 
@@ -65,13 +71,12 @@ export default {
   },
 
   methods: {
-    range(start, end) {
-      return (new Array(end - start + 1)).fill(undefined).map((_, i) => i + start);
+    getJobSettingsObject() {
+      return JSON.parse(JSON.stringify(this.jobSettings));
     },
 
     getJobSettingsKeys() {
-      const jobSettings = JSON.parse(JSON.stringify(this.jobSettings));
-      return Object.keys(jobSettings);
+      return Object.keys(this.getJobSettingsObject());
     },
 
     getNumberInputRows() {
@@ -81,13 +86,12 @@ export default {
     },
 
     getColumnNumberRange(number) {
-      return this.range(number * this.numberColumnsPerRow, number * this.numberColumnsPerRow + 1);
+      return this.range(number * this.numberColumnsPerRow, number
+       * this.numberColumnsPerRow + this.numberColumnsPerRow - 1);
     },
 
     getNumberOfJobSettings() {
-      const jobSettings = JSON.parse(JSON.stringify(this.jobSettings));
-
-      return Object.keys(jobSettings).length;
+      return Object.keys(this.getJobSettingsObject()).length;
     },
 
     getNameOfSettingByKey(key) {
