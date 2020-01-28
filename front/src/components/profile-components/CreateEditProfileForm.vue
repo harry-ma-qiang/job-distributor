@@ -83,7 +83,7 @@ export default {
   created() {
     if (!this.profile.Name) {
       this.$store.dispatch('loadSettings').then(() => {
-        this.getNoneOptionalSettings.forEach((s) => { this.$set(this.profile.Options, s.key, ''); });
+        this.setDefaultProfileOptions(this.getNoneOptionalSettings);
       });
     } else {
       this.$store.dispatch('loadSettings');
@@ -91,6 +91,10 @@ export default {
   },
 
   methods: {
+    setDefaultProfileOptions(options) {
+      options.forEach((s) => { this.$set(this.profile.Options, s.key, ''); });
+    },
+
     closeForm() {
       this.$emit('close');
     },
