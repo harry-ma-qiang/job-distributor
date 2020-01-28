@@ -150,6 +150,8 @@ export default {
     },
 
     async handleChangeProfileComboboxValue(profile) {
+      this.jobOptions = {};
+
       if (profile) {
         try {
           await this.setJobOptionsFromProfile(profile.id);
@@ -158,7 +160,6 @@ export default {
 
         }
       } else {
-        this.jobOptions = {};
         this.setDefaultJobOptions();
       }
     },
