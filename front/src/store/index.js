@@ -12,18 +12,18 @@ Vue.use(VueAxios, axios);
 export default new Vuex.Store({
   state: {
     jobs: [],
-    jobSettings: null,
+    jobOptions: null,
 
     profiles: [],
-    profileJobSettings: null,
+    profileJobOptions: null,
 
-    settings: null,
+    options: null,
   },
 
   getters: {
     getProfileById: state => id => state.profiles.find(profile => profile.id === id),
-    getOptionalSettings: state => state.settings.filter(s => s.is_optional),
-    getNoneOptionalSettings: state => state.settings.filter(s => !s.is_optional),
+    getOptionalOptions: state => state.options.filter(s => s.is_optional),
+    getNoneOptionalOptions: state => state.options.filter(s => !s.is_optional),
   },
 
   mutations: {
@@ -31,8 +31,8 @@ export default new Vuex.Store({
       state.jobs = jobs;
     },
 
-    SET_JOB_SETTINGS(state, jobSettings) {
-      state.jobSettings = jobSettings;
+    SET_JOB_OPTIONS(state, jobOptions) {
+      state.jobOptions = jobOptions;
     },
 
     DELETE_JOB(state, id) {
@@ -49,12 +49,12 @@ export default new Vuex.Store({
       state.profiles.splice(index, 1);
     },
 
-    SET_PROFILE_JOB_SETTINGS(state, profileJobSettings) {
-      state.profileJobSettings = profileJobSettings;
+    SET_PROFILE_JOB_OPTIONS(state, profileJobOptions) {
+      state.profileJobOptions = profileJobOptions;
     },
 
-    SET_SETTINGS(state, settings) {
-      state.settings = settings;
+    SET_OPTIONS(state, options) {
+      state.options = options;
     },
   },
 
@@ -74,16 +74,16 @@ export default new Vuex.Store({
       }
     },
 
-    async fetchJobSettings({ commit }, id) {
+    async fetchJobOptions({ commit }, id) {
       try {
         const response = await axios.get(`${baseUrl}/api/getOptions/${id}`);
         if (response) {
-          commit('SET_JOB_SETTINGS', response.data);
+          commit('SET_JOB_OPTIONS', response.data);
         } else {
           throw new Error('Resoponse is empty');
         }
       } catch (e) {
-        throw new Error('Can not fetch job settings');
+        throw new Error('Can not fetch job options');
       }
     },
 
@@ -148,16 +148,16 @@ export default new Vuex.Store({
       }
     },
 
-    async fetchProfileJobSettings({ commit }, id) {
+    async fetchProfileJobOptions({ commit }, id) {
       try {
         const response = await axios.get(`${baseUrl}/api/getProfileOptions/${id}`);
         if (response) {
-          commit('SET_PROFILE_JOB_SETTINGS', response.data);
+          commit('SET_PROFILE_JOB_OPTIONS', response.data);
         } else {
           throw new Error('Resoponse is empty');
         }
       } catch (e) {
-        throw new Error('Can not fetch job settings');
+        throw new Error('Can not fetch job options');
       }
     },
 
@@ -170,12 +170,12 @@ export default new Vuex.Store({
       }
     },
 
-    async loadSettings() {
+    async loadOptions() {
       try {
         const response = await axios.get(`${baseUrl}/api/getOptions`);
 
         if (response) {
-          this.commit('SET_SETTINGS', response.data);
+          this.commit('SET_OPTIONS', response.data);
         } else {
           throw new Error('Resoponse is empty');
         }

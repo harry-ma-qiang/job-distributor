@@ -46,7 +46,7 @@
                 max-width="500px">
                 <CreateEditProfileForm
                   title="Edit Profile"
-                  :default-profile="currentProfileJobSettings"
+                  :default-profile="currentProfileJobOptions"
                   :profile-id="currentProfileId"
                   @close = "handleEditProfileFormClose"
                   @save = "handleEditProfileFormSave"
@@ -133,7 +133,7 @@ export default {
         { text: 'Actions', value: 'action', sortable: false },
       ],
       defaultProfile: [],
-      currentProfileJobSettings: null,
+      currentProfileJobOptions: null,
       currentProfileId: null,
       profileInterval: null,
     };
@@ -154,14 +154,14 @@ export default {
 
   computed: mapState([
     'profiles',
-    'profileJobSettings',
+    'profileJobOptions',
   ]),
 
   methods: {
     async handleEditProfileIconClick(profile) {
       try {
-        await this.$store.dispatch('fetchProfileJobSettings', profile.id);
-        this.currentProfileJobSettings = { Name: profile.name, Options: this.profileJobSettings };
+        await this.$store.dispatch('fetchProfileJobOptions', profile.id);
+        this.currentProfileJobOptions = { Name: profile.name, Options: this.profileJobOptions };
         this.currentProfileId = profile.id;
         this.isEditProfileModalOpen = true;
       // eslint-disable-next-line no-empty

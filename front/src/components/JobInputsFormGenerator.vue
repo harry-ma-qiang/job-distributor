@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <div v-if="!settings">Loading Please wait...</div>
+        <div v-if="!options">Loading Please wait...</div>
         <div v-else>
           <v-row v-for="i in getNumberInputRows()"
           v-bind:key="i">
@@ -8,9 +8,9 @@
             cols="12" :sm="12/defaultNumberColumnsPerRow" :md="12/defaultNumberColumnsPerRow">
             <v-text-field
             @change="handleTextFieldChange"
-            v-if="getNumberOfJobSettings() > s"
-            v-model="jobSettings[getJobSettingsKeys()[s]]"
-            :label="getNameOfSettingByKey(getJobSettingsKeys()[s])">
+            v-if="getNumberOfJobOptions() > s"
+            v-model="jobOptions[getJobOptionsKeys()[s]]"
+            :label="getNameOfOptionByKey(getJobOptionsKeys()[s])">
             </v-text-field>
             </v-col>
         </v-row>
@@ -34,7 +34,7 @@ export default {
   },
 
   props: {
-    defaultJobSettings: {
+    defaultJobOptions: {
       type: Object,
       default: () => ({}),
     },
@@ -48,40 +48,40 @@ export default {
   },
 
   watch: {
-    defaultJobSettings(newVal) {
-      this.jobSettings = newVal;
+    defaultJobOptions(newVal) {
+      this.jobOptions = newVal;
     },
   },
 
   computed: {
     ...mapState([
-      'settings',
+      'options',
     ]),
   },
 
   created() {
-    this.$store.dispatch('loadSettings');
+    this.$store.dispatch('loadOptions');
   },
 
   data() {
     return {
-      jobSettings: this.defaultJobSettings,
+      jobOptions: this.defaultJobOptions,
       numberColumnsPerRow: this.defaultNumberColumnsPerRow,
     };
   },
 
   methods: {
-    getJobSettingsObject() {
-      return JSON.parse(JSON.stringify(this.jobSettings));
+    getJobOptionsObject() {
+      return JSON.parse(JSON.stringify(this.jobOptions));
     },
 
-    getJobSettingsKeys() {
-      return Object.keys(this.getJobSettingsObject());
+    getJobOptionsKeys() {
+      return Object.keys(this.getJobOptionsObject());
     },
 
     getNumberInputRows() {
       return Array.from(Array(
-        Math.ceil(this.getNumberOfJobSettings() / this.numberColumnsPerRow),
+        Math.ceil(this.getNumberOfJobOptions() / this.numberColumnsPerRow),
       ).keys());
     },
 
@@ -90,22 +90,22 @@ export default {
        * this.numberColumnsPerRow + this.numberColumnsPerRow - 1);
     },
 
-    getNumberOfJobSettings() {
-      return Object.keys(this.getJobSettingsObject()).length;
+    getNumberOfJobOptions() {
+      return Object.keys(this.getJobOptionsObject()).length;
     },
 
-    getNameOfSettingByKey(key) {
-      const setting = this.settings.find(x => x.key === key);
+    getNameOfOptionByKey(key) {
+      const option = this.options.find(x => x.key === key);
 
-      return setting ? setting.name : '';
+      return option ? option.name : '';
     },
 
-    getJobSettingByOrderNumber(number) {
-      return this.jobSettings[Object.keys(this.jobSettings)[number]];
+    getJobOptionByOrderNumber(number) {
+      return this.jobOptions[Object.keys(this.jobOptions)[number]];
     },
 
     handleTextFieldChange() {
-      this.$emit('change', this.jobSettings);
+      this.$emit('change', this.jobOptions);
     },
   },
 };

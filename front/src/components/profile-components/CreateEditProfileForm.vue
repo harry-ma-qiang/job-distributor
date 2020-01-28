@@ -13,7 +13,7 @@
             </v-row>
             <div class="scroll-container">
               <JobInputsFormGenerator
-              :default-job-settings="profile.Options"
+              :default-job-options="profile.Options"
               :default-number-columns-per-row="2"
               @change="handleJobInputsFormGeneratorChange" />
             </div>
@@ -70,7 +70,7 @@ export default {
 
   computed: {
     ...mapGetters([
-      'getNoneOptionalSettings',
+      'getNoneOptionalOptions',
     ]),
   },
 
@@ -82,11 +82,11 @@ export default {
 
   created() {
     if (!this.profile.Name) {
-      this.$store.dispatch('loadSettings').then(() => {
-        this.setDefaultProfileOptions(this.getNoneOptionalSettings);
+      this.$store.dispatch('loadOptions').then(() => {
+        this.setDefaultProfileOptions(this.getNoneOptionalOptions);
       });
     } else {
-      this.$store.dispatch('loadSettings');
+      this.$store.dispatch('loadOptions');
     }
   },
 
@@ -103,8 +103,8 @@ export default {
       this.$emit('save', this.profile, this.profileId);
     },
 
-    handleJobInputsFormGeneratorChange(jobSettings) {
-      this.profile.Options = jobSettings;
+    handleJobInputsFormGeneratorChange(jobOptions) {
+      this.profile.Options = jobOptions;
     },
   },
 };

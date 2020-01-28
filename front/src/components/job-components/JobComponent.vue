@@ -42,7 +42,7 @@
                 max-width="500px">
                 <CreateEditJobForm
                   title="Edit job"
-                  :default-job-settings="currentJobSettings"
+                  :default-job-options="currentJobOptions"
                   :job="currentJob"
                   @close = "handleEditJobFormClose"
                   @save = "handleEditJobFormSave"
@@ -118,7 +118,7 @@ export default {
         { text: 'Last Update', value: 'lastUpdate' },
         { text: 'Actions', value: 'action', sortable: false },
       ],
-      currentJobSettings: null,
+      currentJobOptions: null,
       currentJob: null,
       jobInterval: null,
     };
@@ -134,14 +134,14 @@ export default {
 
   computed: mapState([
     'jobs',
-    'jobSettings',
+    'jobOptions',
   ]),
 
   methods: {
     async handleEditJobIconClick(job) {
       try {
-        await this.$store.dispatch('fetchJobSettings', job.id);
-        this.currentJobSettings = this.jobSettings;
+        await this.$store.dispatch('fetchJobOptions', job.id);
+        this.currentJobOptions = this.jobOptions;
         this.currentJob = job;
         this.isEditJobModalOpen = true;
       // eslint-disable-next-line no-empty
@@ -169,10 +169,10 @@ export default {
       this.isNewJobModalOpen = false;
     },
 
-    async handleNewJobFormSave(jobSettings, jobName) {
+    async handleNewJobFormSave(jobOptions, jobName) {
       try {
         await this.$store.dispatch('addJob', {
-          Options: jobSettings,
+          Options: jobOptions,
           Name: jobName,
         });
 
@@ -186,12 +186,12 @@ export default {
       this.isEditJobModalOpen = false;
     },
 
-    async handleEditJobFormSave(jobSettings, jobName, id) {
+    async handleEditJobFormSave(jobOptions, jobName, id) {
       try {
         await this.$store.dispatch('editJob', {
           id,
           data: {
-            Options: jobSettings,
+            Options: jobOptions,
             Name: jobName,
           },
         });

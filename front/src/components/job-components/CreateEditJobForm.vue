@@ -24,7 +24,7 @@
               </v-row>
               <div class="scroll-container">
                 <JobInputsFormGenerator
-                :default-job-settings="jobSettings"
+                :default-job-options="jobOptions"
                 :default-number-columns-per-row="2"
                 @change="handleJobInputsFormGeneratorChange" />
               </div>
@@ -72,7 +72,7 @@ export default {
       type: Object,
       default: () => ({ id: 0, name: '' }),
     },
-    defaultJobSettings: {
+    defaultJobOptions: {
       type: Object,
       default: () => ({}),
     },
@@ -80,20 +80,20 @@ export default {
 
   computed: {
     ...mapGetters([
-      'getNoneOptionalSettings',
+      'getNoneOptionalOptions',
       'getProfileById',
     ]),
 
     ...mapState([
       'profiles',
-      'profileJobSettings',
+      'profileJobOptions',
     ]),
   },
 
   data() {
     return {
       jobName: this.job.name,
-      jobSettings: this.defaultJobSettings,
+      jobOptions: this.defaultJobOptions,
       selectedProfile: null,
       numberColumnsPerRow: 2,
     };
@@ -107,14 +107,14 @@ export default {
         if (defaultProfileId !== 'undefined' && defaultProfileId) {
           this.selectedProfile = this.getProfileById(defaultProfileId);
           if (this.selectedProfile) {
-            this.setJobSettingsFromProfile(this.selectedProfile.id);
+            this.setJobOptionsFromProfile(this.selectedProfile.id);
           }
         }
       });
 
-      this.setDefaultJobSettings();
+      this.setDefaultJobOptions();
     } else {
-      this.$store.dispatch('loadSettings');
+      this.$store.dispatch('loadOptions');
     }
   },
 
@@ -124,24 +124,24 @@ export default {
     },
 
     saveForm() {
-      this.$emit('save', this.jobSettings, this.jobName, this.job.id);
+      this.$emit('save', this.jobOptions, this.jobName, this.job.id);
     },
 
-    setDefaultJobSettings() {
-      this.$store.dispatch('loadSettings').then(() => {
-        this.getNoneOptionalSettings.forEach((s) => { this.$set(this.jobSettings, s.key, ''); });
+    setDefaultJobOptions() {
+      this.$store.dispatch('loadOptions').then(() => {
+        this.getNoneOptionalOptions.forEach((s) => { this.$set(this.jobOptions, s.key, ''); });
       });
     },
 
-    handleJobInputsFormGeneratorChange(jobSettings) {
-      this.jobSettings = jobSettings;
+    handleJobInputsFormGeneratorChange(jobOptions) {
+      this.jobOptions = jobOptions;
     },
 
-    async setJobSettingsFromProfile(profileId) {
+    async setJobOptionsFromProfile(profileId) {
       try {
-        await this.$store.dispatch('fetchProfileJobSettings', profileId);
-        if (this.profileJobSettings) {
-          this.jobSettings = Object.assign({}, this.jobSettings, this.profileJobSettings);
+        await this.$store.dispatch('fetchProfileJobOptions', profileId);
+        if (this.profileJobOptions) {
+          this.jobOptions = Object.assign({}, this.jobOptions, this.profileJobOptions);
         }
         // eslint-disable-next-line no-empty
       } catch (e) {
@@ -152,14 +152,14 @@ export default {
     async handleChangeProfileComboboxValue(profile) {
       if (profile) {
         try {
-          await this.setJobSettingsFromProfile(profile.id);
+          await this.setJobOptionsFromProfile(profile.id);
         // eslint-disable-next-line no-empty
         } catch (e) {
 
         }
       } else {
-        this.jobSettings = {};
-        this.setDefaultJobSettings();
+        this.jobOptions = {};
+        this.setDefaultJobOptions();
       }
     },
   },
