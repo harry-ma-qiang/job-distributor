@@ -166,7 +166,8 @@ def updateProfile(profile, job_options):
         try:
             cursor = conn.cursor()
             options = getOptions()
-            cursor.executemany("INSERT OR REPLACE INTO ProfileOptionValues (OptionID, ProfileID, Value) VALUES (?,?,?)",
+            cursor.execute("DELETE FROM ProfileOptionValues WHERE ProfileID = ?", (profile.id,))
+            cursor.executemany("INSERT INTO ProfileOptionValues (OptionID, ProfileID, Value) VALUES (?,?,?)",
                                [(next(o.id for o in options if o.key == job_option.key), profile.id, job_option.value)
                                 for job_option in job_options])
             cursor.execute("UPDATE Profile SET Name = ? WHERE ID = ?", (profile.name, profile.id))
@@ -183,7 +184,8 @@ def updateJob(jobId, name, job_options):
         try:
             cursor = conn.cursor()
             options = getOptions()
-            cursor.executemany("INSERT OR REPLACE INTO JobOptionValues (OptionID, JobID, Value) VALUES (?,?,?)",
+            cursor.execute("DELETE FROM JobOptionValues WHERE JobID = ?", (jobId,))
+            cursor.executemany("INSERT INTO JobOptionValues (OptionID, JobID, Value) VALUES (?,?,?)",
                                [(next(o.id for o in options if o.key == job_option.key), jobId, job_option.value)
                                 for job_option in job_options])
             cursor.execute("UPDATE Job SET LastUpdate = ?, Name = ? WHERE ID = ?", (now, name, jobId))
