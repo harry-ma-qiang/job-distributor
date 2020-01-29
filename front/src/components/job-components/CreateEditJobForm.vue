@@ -101,41 +101,28 @@ export default {
   },
 
   created() {
-    if (!this.job.id) {
-      this.setDefaultJobOptions();
-      this.setJobOptionsFromDefaultProfile();
-    } else {
-      this.$store.dispatch('loadOptions');
-    }
+    this.$store.dispatch('loadOptions').then(() => {
+      if (!this.job.id) {
+        this.$store.dispatch('loadProfiles').then(() => {
+          this.setDefaultJobOptions();
+          this.setJobOptionsFromDefaultProfile();
+        });
+      }
+    });
   },
 
   methods: {
     setJobOptionsFromDefaultProfile() {
-      this.$store.dispatch('loadProfiles').then(() => {
-        const defaultProfile = this.getDefaultProfile;
-        if (defaultProfile) {
-          this.selectedProfile = defaultProfile;
-          this.setJobOptionsFromProfile(defaultProfile.id);
-        }
-      });
-    },
+      const defaultProfile = this.getDefaultProfile;
 
-    handleClickCloseFormButton() {
-      this.$emit('close');
-    },
-
-    handleClickSaveFormButton() {
-      this.$emit('save', this.jobOptions, this.jobName, this.job.id);
+      if (defaultProfile) {
+        this.selectedProfile = defaultProfile;
+        this.setJobOptionsFromProfile(defaultProfile.id);
+      }
     },
 
     setDefaultJobOptions() {
-      this.$store.dispatch('loadOptions').then(() => {
-        this.getNoneOptionalOptions.forEach((s) => { this.$set(this.jobOptions, s.key, ''); });
-      });
-    },
-
-    handleJobInputsFormGeneratorChange(jobOptions) {
-      this.jobOptions = jobOptions;
+      this.getNoneOptionalOptions.forEach((s) => { this.$set(this.jobOptions, s.key, ''); });
     },
 
     async setJobOptionsFromProfile(profileId) {
@@ -150,18 +137,31 @@ export default {
       }
     },
 
+    handleClickCloseFormButton() {
+      this.$emit('close');
+    },
+
+    handleClickSaveFormButton() {
+      this.$emit('save', this.jobOptions, this.jobName, this.job.id);
+    },
+
+    handleJobInputsFormGeneratorChange(jobOptions) {
+      this.jobOptions = jobOptions;
+    },
+
     async handleChangeProfileComboboxValue(profile) {
       this.jobOptions = {};
 
-      if (profile) {
-        try {
+      try {
+        if (profile) {
           await this.setJobOptionsFromProfile(profile.id);
-        // eslint-disable-next-line no-empty
-        } catch (e) {
-
+        } else {
+          await this.$store.dispatch('loadOptions');
+          this.setDefaultJobOptions();
         }
-      } else {
-        this.setDefaultJobOptions();
+        // eslint-disable-next-line no-empty
+      } catch (e) {
+
       }
     },
   },
