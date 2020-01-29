@@ -32,8 +32,8 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="closeForm">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="saveForm">Save</v-btn>
+            <v-btn color="blue darken-1" text @click="handleClickCloseFormButton">Cancel</v-btn>
+            <v-btn color="blue darken-1" text @click="handleClickSaveFormButton">Save</v-btn>
         </v-card-actions>
     </v-card>
 </template>
@@ -82,6 +82,7 @@ export default {
     ...mapGetters([
       'getNoneOptionalOptions',
       'getProfileById',
+      'getDefaultProfile',
     ]),
 
     ...mapState([
@@ -101,29 +102,29 @@ export default {
 
   created() {
     if (!this.job.id) {
-      this.$store.dispatch('loadProfiles').then(() => {
-        const defaultProfileId = parseInt(window.localStorage.getItem('defaultProfileId'), 10);
-
-        if (defaultProfileId !== 'undefined' && defaultProfileId) {
-          this.selectedProfile = this.getProfileById(defaultProfileId);
-          if (this.selectedProfile) {
-            this.setJobOptionsFromProfile(this.selectedProfile.id);
-          }
-        }
-      });
-
       this.setDefaultJobOptions();
+      this.setJobOptionsFromDefaultProfile();
     } else {
       this.$store.dispatch('loadOptions');
     }
   },
 
   methods: {
-    closeForm() {
+    setJobOptionsFromDefaultProfile() {
+      this.$store.dispatch('loadProfiles').then(() => {
+        const defaultProfile = this.getDefaultProfile;
+        if (defaultProfile) {
+          this.selectedProfile = defaultProfile;
+          this.setJobOptionsFromProfile(defaultProfile.id);
+        }
+      });
+    },
+
+    handleClickCloseFormButton() {
       this.$emit('close');
     },
 
-    saveForm() {
+    handleClickSaveFormButton() {
       this.$emit('save', this.jobOptions, this.jobName, this.job.id);
     },
 

@@ -100,7 +100,7 @@ import {
   VCheckbox,
   VDialog,
 } from 'vuetify/lib';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import CreateEditProfileForm from './CreateEditProfileForm.vue';
 
 export default {
@@ -122,6 +122,17 @@ export default {
     CreateEditProfileForm,
   },
 
+  computed: {
+    ...mapState([
+      'profiles',
+      'profileJobOptions',
+    ]),
+
+    ...mapGetters([
+      'getDefaultProfile',
+    ]),
+  },
+
   data() {
     return {
       isNewProfileModalOpen: false,
@@ -140,22 +151,17 @@ export default {
   },
 
   created() {
-    const defaultProfileId = parseInt(window.localStorage.getItem('defaultProfileId'), 10);
-    if (defaultProfileId !== 'undefined' && defaultProfileId) {
-      this.defaultProfile = [defaultProfileId];
-    }
-
-    this.$store.dispatch('loadProfiles');
+    this.$store.dispatch('loadProfiles').then(() => {
+      const defaultProfile = this.getDefaultProfile;
+      if (defaultProfile !== 'undefined' && defaultProfile) {
+        this.defaultProfile = [defaultProfile.id];
+      }
+    });
 
     this.jobInterval = setInterval(() => {
       this.$store.dispatch('loadProfiles');
     }, 10000);
   },
-
-  computed: mapState([
-    'profiles',
-    'profileJobOptions',
-  ]),
 
   methods: {
     async handleEditProfileIconClick(profile) {
@@ -222,7 +228,7 @@ export default {
     },
 
     handleDefaultProfileCheckBoxChange() {
-      window.localStorage.setItem('defaultProfileId', this.defaultProfile[0]);
+      this.$store.dispatch('setDefaultProfileId', this.defaultProfile[0]);
     },
   },
 };

@@ -5,6 +5,7 @@ import config from 'config';
 import VueAxios from 'vue-axios';
 
 const { baseUrl } = config.api;
+const localStorageDefaultProfileId = 'defaultProfileId';
 
 Vue.use(Vuex);
 Vue.use(VueAxios, axios);
@@ -22,6 +23,9 @@ export default new Vuex.Store({
 
   getters: {
     getProfileById: state => id => state.profiles.find(profile => profile.id === id),
+    getDefaultProfile: (state, getters) => getters.getProfileById(parseInt(
+      window.localStorage.getItem(localStorageDefaultProfileId), 10,
+    )),
     getOptionalOptions: state => state.options.filter(s => s.is_optional),
     getNoneOptionalOptions: state => state.options.filter(s => !s.is_optional),
   },
@@ -55,6 +59,10 @@ export default new Vuex.Store({
 
     SET_OPTIONS(state, options) {
       state.options = options;
+    },
+
+    SET_DEFAULT_PROFILE_ID(state, profileId) {
+      window.localStorage.setItem(localStorageDefaultProfileId, profileId);
     },
   },
 
@@ -182,6 +190,10 @@ export default new Vuex.Store({
       } catch (e) {
         throw new Error('Can not fetch options list');
       }
+    },
+
+    setDefaultProfileId({ commit }, profileId) {
+      commit('SET_DEFAULT_PROFILE_ID', profileId);
     },
   },
 });
