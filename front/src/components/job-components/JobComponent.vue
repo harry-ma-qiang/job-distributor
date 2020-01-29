@@ -32,7 +32,7 @@
               </v-btn>
               <v-dialog v-model="isNewJobModalOpen" v-if="isNewJobModalOpen" max-width="500px">
                 <CreateEditJobForm
-                  @close = "closeAddJobForm"
+                  @close = "handleCloseAddJobForm"
                   @save = "handleNewJobFormSave"
                 />
               </v-dialog>
@@ -60,7 +60,7 @@
                 </v-icon>
             <v-icon
               small
-              @click="deleteJobButton(item)"
+              @click="handleDeleteJobButtonClick(item)"
             >
               delete
             </v-icon>
@@ -149,7 +149,7 @@ export default {
       }
     },
 
-    async deleteJobButton(job) {
+    async handleDeleteJobButtonClick(job) {
       const res = await this.$confirm('Are you sure that you want to delete this job?');
 
       if (res) {
@@ -165,7 +165,7 @@ export default {
       this.isNewJobModalOpen = true;
     },
 
-    closeAddJobForm() {
+    handleCloseAddJobForm() {
       this.isNewJobModalOpen = false;
     },
 
