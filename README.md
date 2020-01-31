@@ -40,7 +40,7 @@ Add job to the job queue (for further processing).
   * **Method:**  
     `POST`  
   * **Data Params**    
-    `{ Key: Value... }`  
+    `{ Options: { <Key:string>: <Value:string>...}, Name: <name:string>}`  
   * **Success Response:**
     * **Code:** 200  
     **Content:** `{ code: 200, msg: "Job has been added.", result: True }`  
@@ -55,7 +55,7 @@ Edit job from the job queue (change or add new options).
       **Required:**    
       `id=[integer]`
   * **Data Params**    
-    `{ Key: Value... }`  
+    `{ Options: { <Key:string>: <Value:string>...}, Name: <name:string>}`  
   * **Success Response:**
     * **Code:** 200  
     **Content:** `{ code: 200, msg: "Job has been updated.", result: True }`  
@@ -97,7 +97,7 @@ Return job options by job id.
     `id=[integer]` 
   * **Success Response:**
     * **Code:** 200  
-    **Content:** `{ Key: Value,... }`
+    **Content:** `{ <Key:string>: <Value:string>,... }`
     
  ### Pop job from the queue 
 Remove (set status 'doing') the next job from the queue and return it.
@@ -107,7 +107,7 @@ Remove (set status 'doing') the next job from the queue and return it.
     `GET`  
   * **Success Response:**
     * **Code:** 200  
-    **Content:** `{ jobId: <id:integer>, Key: Value,... }`  
+    **Content:** `{ jobId: <id:integer>, name: <jobName:string>, service: 'encode', enable: '1', version: <version:integer>, config:  <host:string>/api/getAttributes, status: <host:string>/api/updateJob, <Key:string>: <Value:string> ... }`  
    * **Error Response:**  
     * **Code:** 400  
     **Content:** `{ code: 400, msg: "The queue is empty.", result: False }`
@@ -134,6 +134,16 @@ Set job status.
   OR  
     * **Code:** 404  
     **Content:** `{ code: 404, msg: "Status id:<id> isn't correct. Allowed statuses: ['todo', 'doing', 'processed']", result: False }`
+
+ ### Get options
+Return list of available options.
+  * **URL**  
+    /api/getOptions
+  * **Method:**  
+    `GET`  
+  * **Success Response:**
+    * **Code:** 200  
+    **Content:** `[{option Object}, {option Object}...]`  
     
 ### Add profile
 Add profile with job options (options will be using to fill out job information automatically). 
@@ -145,7 +155,7 @@ Add profile with job options (options will be using to fill out job information 
     **Required:**    
     `profile_name=[string]`  
   * **Data Params**    
-    `{ Key: Value... }`  
+    `{ <Key:string>: <Value:string>... }`  
   * **Success Response:**
     * **Code:** 200  
     **Content:** `{ code: 200, msg: "Profile has been added.", result: True }` 
@@ -187,7 +197,7 @@ Return profile options by profile id.
     `id=[integer]` 
   * **Success Response:**
     * **Code:** 200  
-    **Content:** `{ Key: Value,... }`
+    **Content:** `{ <Key:string>: <Value:string>,... }`
   
   ### Edit profile
 Edit profile. Change or add new options, change the name of the profile.
@@ -196,7 +206,7 @@ Edit profile. Change or add new options, change the name of the profile.
   * **Method:**  
     `POST`  
   * **Data Params**    
-    `{ Id: 1, Name: "Profile1" ,Options: { Key: Value... } }`  
+    `{ Id: 1, Name: "Profile1" ,Options: { <Key:string>: <Value:string>... } }`  
   * **Success Response:**
     * **Code:** 200  
     **Content:** `{ code: 200, msg: "Profile has been updated.", result: True }`  
