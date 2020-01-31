@@ -12,8 +12,16 @@ Where:
   * `<port>` — port through which system will be working (default value 5000).
   * `<host>` — host on which system will be hosting (default value localhost). 
     
-    
+  
 ## Usage
+### Objects description (reference information):
+* **job Object:**  
+   `{ id:<id:integer>, status:<status:string>, lastUpdate:<date:string>, name:<name:string> }`
+* **option Object:**  
+   `{ id:<id:integer>, key:<key:string>, name:<name:string>, is_optional:<0|1:integer> }`
+* **profile Object:**  
+   `{ id:<id:integer>, name:<name:string> }`
+
 ### Get start page
 Return frontend page that uses the API system.
   * **URL**  
