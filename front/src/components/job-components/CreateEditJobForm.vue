@@ -23,10 +23,16 @@
                 </v-flex>
               </v-row>
               <div class="scroll-container">
-                <JobInputsFormGenerator
-                :default-job-options="jobOptions"
-                :default-number-columns-per-row="2"
-                @change="handleJobInputsFormGeneratorChange" />
+                <div v-if="!options">Loading Please wait...</div>
+                <div v-else>
+                  <JobInputsFormGenerator
+                  :options="options"
+                  :job-options="jobOptions"
+                  :default-number-columns-per-row="2"
+                  @updateJobOption="handleUpdateJobOptionOfJobInputsFormGenerator"
+                  @deleteJobOption="handleDeleteJobOptionOfJobInputsFormGenerator"
+                  @addJobOption="handleAddJobOptionOfJobInputsFormGenerator" />
+                </div>
               </div>
             </v-container>
         </v-card-text>
@@ -44,6 +50,7 @@ import {
   VCardActions, VSpacer, VBtn, VFlex, VCombobox,
 } from 'vuetify/lib';
 import { mapState, mapGetters } from 'vuex';
+import Vue from 'vue';
 import JobInputsFormGenerator from '../JobInputsFormGenerator.vue';
 
 export default {
@@ -86,6 +93,7 @@ export default {
     ]),
 
     ...mapState([
+      'options',
       'profiles',
       'profileJobOptions',
     ]),
@@ -122,7 +130,11 @@ export default {
     },
 
     setDefaultJobOptions() {
-      this.getNoneOptionalOptions.forEach((s) => { this.$set(this.jobOptions, s.key, ''); });
+      this.setJobOptions(this.getNoneOptionalOptions);
+    },
+
+    setJobOptions(options) {
+      options.forEach((s) => { this.$set(this.jobOptions, s.key, ''); });
     },
 
     async setJobOptionsFromProfile(profileId) {
@@ -145,13 +157,7 @@ export default {
       this.$emit('save', this.jobOptions, this.jobName, this.job.id);
     },
 
-    handleJobInputsFormGeneratorChange(jobOptions) {
-      this.jobOptions = jobOptions;
-    },
-
     async handleChangeProfileComboboxValue(profile) {
-      this.jobOptions = {};
-
       try {
         if (profile) {
           await this.setJobOptionsFromProfile(profile.id);
@@ -164,13 +170,25 @@ export default {
 
       }
     },
+
+    handleUpdateJobOptionOfJobInputsFormGenerator(jobOption) {
+      Object.assign(this.jobOptions, jobOption);
+    },
+
+    handleDeleteJobOptionOfJobInputsFormGenerator(jobOptionKey) {
+      Vue.delete(this.jobOptions, jobOptionKey);
+    },
+
+    handleAddJobOptionOfJobInputsFormGenerator(jobOptionKey) {
+      this.$set(this.jobOptions, jobOptionKey, '');
+    },
   },
 };
 </script>
 
 <style>
 .scroll-container {
-  height: 25vh;
+  height: 35vh;
   overflow-y: auto;
 }
 </style>

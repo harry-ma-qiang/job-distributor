@@ -12,10 +12,16 @@
                 </v-col>
             </v-row>
             <div class="scroll-container">
-              <JobInputsFormGenerator
-              :default-job-options="profile.Options"
-              :default-number-columns-per-row="2"
-              @change="handleJobInputsFormGeneratorChange" />
+              <div v-if="!options">Loading Please wait...</div>
+              <div v-else>
+                <JobInputsFormGenerator
+                :options="options"
+                :job-options="profile.Options"
+                :default-number-columns-per-row="2"
+                @updateJobOption="handleUpdateJobOptionOfJobInputsFormGenerator"
+                @deleteJobOption="handleDeleteJobOptionOfJobInputsFormGenerator"
+                @addJobOption="handleAddJobOptionOfJobInputsFormGenerator" />
+              </div>
             </div>
           </v-container>
         </v-card-text>
@@ -32,7 +38,8 @@
 import {
   VCard, VCardTitle, VCardText, VContainer, VRow, VCol, VTextField, VCardActions, VSpacer, VBtn,
 } from 'vuetify/lib';
-import { mapGetters } from 'vuex';
+import Vue from 'vue';
+import { mapGetters, mapState } from 'vuex';
 import JobInputsFormGenerator from '../JobInputsFormGenerator.vue';
 
 export default {
@@ -72,6 +79,10 @@ export default {
     ...mapGetters([
       'getNoneOptionalOptions',
     ]),
+
+    ...mapState([
+      'options',
+    ]),
   },
 
   data() {
@@ -81,20 +92,13 @@ export default {
   },
 
   created() {
-    if (!this.profile.Name) {
-      this.$store.dispatch('loadOptions').then(() => {
-        this.setDefaultProfileOptions(this.getNoneOptionalOptions);
-      });
-    } else {
-      this.$store.dispatch('loadOptions');
-    }
+    this.$store.dispatch('loadOptions').then(() => {
+      // eslint-disable-next-line no-param-reassign
+      this.options.forEach((o) => { o.is_optional = true; });
+    });
   },
 
   methods: {
-    setDefaultProfileOptions(options) {
-      options.forEach((s) => { this.$set(this.profile.Options, s.key, ''); });
-    },
-
     closeForm() {
       this.$emit('close');
     },
@@ -103,8 +107,16 @@ export default {
       this.$emit('save', this.profile, this.profileId);
     },
 
-    handleJobInputsFormGeneratorChange(jobOptions) {
-      this.profile.Options = jobOptions;
+    handleUpdateJobOptionOfJobInputsFormGenerator(jobOption) {
+      Object.assign(this.profile.Options, jobOption);
+    },
+
+    handleDeleteJobOptionOfJobInputsFormGenerator(jobOptionKey) {
+      Vue.delete(this.profile.Options, jobOptionKey);
+    },
+
+    handleAddJobOptionOfJobInputsFormGenerator(jobOptionKey) {
+      this.$set(this.profile.Options, jobOptionKey, '');
     },
   },
 };

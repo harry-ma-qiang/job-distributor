@@ -1,37 +1,48 @@
 <template>
     <v-container>
-        <div v-if="!options">Loading Please wait...</div>
-        <div v-else>
-          <v-row v-for="i in getNumberInputRows()"
-          v-bind:key="i">
-            <v-col v-for="s in getColumnNumberRange(i)" v-bind:key="s"
-            cols="12" :sm="12/defaultNumberColumnsPerRow" :md="12/defaultNumberColumnsPerRow">
-              <v-text-field
-              v-if="getNumberOfJobOptions() > s"
-              v-model="jobOptions[getJobOptionsKeys()[s]]"
-              :label="getNameOfOptionByKey(getJobOptionsKeys()[s])">
-                <template v-slot:prepend v-if="getIsOptionalOfOptionByKey(getJobOptionsKeys()[s])">
-                  <v-icon
-                    size="25px"
-                    class="mr-2"
-                    @click="handleDeleteOptionIconClick(getJobOptionsKeys()[s])"
-                  >
-                    close
-                  </v-icon>
-                </template>
-              </v-text-field>
-            </v-col>
-        </v-row>
-        </div>
+      <v-row>
+        <v-combobox
+          v-model="selectedOptions"
+          :items="getOptionalOptions(options)"
+          item-text="name"
+          label="Select additional options"
+          multiple
+          outlined
+          dense
+          chips
+          :small-chips="true"
+          @input="handleComboboxOptionsInput"
+        ></v-combobox>
+      </v-row>
+      <v-row v-for="i in getNumberInputRows()"
+      v-bind:key="i">
+        <v-col v-for="s in getColumnNumberRange(i)" v-bind:key="s"
+        cols="12" :sm="12/defaultNumberColumnsPerRow" :md="12/defaultNumberColumnsPerRow">
+          <v-text-field
+          v-if="getNumberOfJobOptions() > s"
+          :value="jobOptions[getJobOptionsKeys()[s]]"
+          :label="getNameOfOptionByKey(getJobOptionsKeys()[s])"
+          @change="handleFormInputChange($event, getJobOptionsKeys()[s])">
+            <template v-slot:prepend v-if="getIsOptionalOfOptionByKey(getJobOptionsKeys()[s])">
+              <v-icon
+                size="25px"
+                class="mr-2"
+                @click="handleDeleteOptionIconClick(getJobOptionsKeys()[s])"
+              >
+                close
+              </v-icon>
+            </template>
+          </v-text-field>
+        </v-col>
+      </v-row>
     </v-container>
 </template>
 
 <script>
 import {
-  VContainer, VRow, VCol, VTextField, VIcon,
+  VContainer, VRow, VCol, VTextField, VIcon, VCombobox,
 } from 'vuetify/lib';
 import Vue from 'vue';
-import { mapState } from 'vuex';
 
 export default {
   name: 'CreateEditJobForm',
@@ -41,10 +52,15 @@ export default {
     VCol,
     VIcon,
     VTextField,
+    VCombobox,
   },
 
   props: {
-    defaultJobOptions: {
+    options: {
+      type: Array,
+      default: () => ([]),
+    },
+    jobOptions: {
       type: Object,
       default: () => ({}),
     },
@@ -58,39 +74,51 @@ export default {
   },
 
   watch: {
-    defaultJobOptions(newVal) {
-      this.jobOptions = newVal;
-    },
-
     jobOptions(newVal) {
-      this.$emit('change', newVal);
+      this.selectedOptions = this.getOptionsFromJobOptions(
+        this.getOptionalOptions(this.options), newVal,
+      );
     },
-  },
-
-  computed: {
-    ...mapState([
-      'options',
-    ]),
-  },
-
-  created() {
-    this.$store.dispatch('loadOptions');
   },
 
   data() {
     return {
-      jobOptions: this.defaultJobOptions,
       numberColumnsPerRow: this.defaultNumberColumnsPerRow,
+      selectedOptions: [],
     };
   },
 
+  created() {
+    this.selectedOptions = this.getOptionsFromJobOptions(
+      this.getOptionalOptions(this.options), this.jobOptions,
+    );
+  },
+
   methods: {
+    getOptionsFromJobOptions(options, jobOptions) {
+      return options.filter(x => Object.keys(jobOptions).find(k => k === x.key));
+    },
+
+    getOptionalOptions: options => options.filter(s => s.is_optional),
+
+    setJobOptions(options) {
+      options.forEach((s) => { this.$set(this.jobOptions, s.key, ''); });
+    },
+
+    deleteJobOptions(options) {
+      options.forEach((s) => { Vue.delete(this.jobOptions, s.key); });
+    },
+
     getJobOptionsObject() {
       return JSON.parse(JSON.stringify(this.jobOptions));
     },
 
     getJobOptionsKeys() {
       return Object.keys(this.getJobOptionsObject());
+    },
+
+    getOptionalOptionsKeys() {
+      return Object.keys(this.options).filter(s => s.is_optional);
     },
 
     getNumberInputRows() {
@@ -128,8 +156,31 @@ export default {
       const res = await this.$confirm('Are you sure that you want to delete this option?');
 
       if (res) {
-        Vue.delete(this.jobOptions, jobOptionKey);
+        this.$emit('deleteJobOption', jobOptionKey);
       }
+    },
+
+    handleComboboxOptionsInput(options) {
+      options.forEach((o) => {
+        if (!this.getJobOptionsKeys().includes(o.key)) {
+          this.$emit('addJobOption', o.key);
+        }
+      });
+
+      const optionalOptions = this.getOptionalOptions(this.options);
+      this.getJobOptionsKeys().forEach((k) => {
+        if (!options.filter(s => s.key === k).length
+        && optionalOptions.filter(s => s.key === k).length) {
+          this.$emit('deleteJobOption', k);
+        }
+      });
+    },
+
+    handleFormInputChange(jobOptionValue, jobOptionKey) {
+      const updatedJobOption = {};
+      updatedJobOption[jobOptionKey] = jobOptionValue;
+
+      this.$emit('updateJobOption', updatedJobOption);
     },
   },
 };
