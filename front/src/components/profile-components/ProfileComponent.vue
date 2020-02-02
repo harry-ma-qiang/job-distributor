@@ -202,12 +202,11 @@ export default {
 
     async handleEditProfileFormSave(profile, profileId) {
       try {
-        const profileData = {
+        await this.$store.dispatch('editProfile', {
           Id: profileId,
           Name: profile.Name,
           Options: profile.Options,
-        };
-        await this.$store.dispatch('editProfile', profileData);
+        });
         this.isEditProfileModalOpen = false;
       // eslint-disable-next-line no-empty
       } catch (e) {
