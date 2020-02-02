@@ -104,7 +104,6 @@ export default {
       jobName: this.job.name,
       jobOptions: this.defaultJobOptions,
       selectedProfile: null,
-      numberColumnsPerRow: 2,
     };
   },
 
@@ -112,7 +111,7 @@ export default {
     this.$store.dispatch('loadOptions').then(() => {
       if (!this.job.id) {
         this.$store.dispatch('loadProfiles').then(() => {
-          this.setDefaultJobOptions();
+          this.setDefaultJobOptions(this.getNoneOptionalOptions);
           this.setJobOptionsFromDefaultProfile();
         });
       }
@@ -129,12 +128,12 @@ export default {
       }
     },
 
-    setDefaultJobOptions() {
-      this.setJobOptions(this.getNoneOptionalOptions);
+    addJobOption(jobOptions, key, value = '') {
+      this.$set(jobOptions, key, value);
     },
 
-    setJobOptions(options) {
-      options.forEach((s) => { this.$set(this.jobOptions, s.key, ''); });
+    setDefaultJobOptions(options) {
+      options.forEach((s) => { this.addJobOption(this.jobOptions, s.key); });
     },
 
     async setJobOptionsFromProfile(profileId) {
@@ -163,7 +162,7 @@ export default {
           await this.setJobOptionsFromProfile(profile.id);
         } else {
           await this.$store.dispatch('loadOptions');
-          this.setDefaultJobOptions();
+          this.setDefaultJobOptions(this.getNoneOptionalOptions);
         }
         // eslint-disable-next-line no-empty
       } catch (e) {
@@ -180,7 +179,7 @@ export default {
     },
 
     handleAddJobOptionOfJobInputsFormGenerator(jobOptionKey) {
-      this.$set(this.jobOptions, jobOptionKey, '');
+      this.addJobOption(this.jobOptions, jobOptionKey);
     },
   },
 };
