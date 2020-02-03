@@ -57,8 +57,9 @@
             <v-checkbox
                 :key="item.id"
                 :value="item.id"
-                v-model="defaultProfile"
-                :disabled="defaultProfile.length > 0 && item.id != defaultProfile[0]"
+                v-model="profileIdOfCheckedItems"
+                :disabled="profileIdOfCheckedItems.length > 0 &&
+                item.id != profileIdOfCheckedItems[0]"
                 @change="handleDefaultProfileCheckBoxChange(item)"
             >
             </v-checkbox>
@@ -142,7 +143,7 @@ export default {
         { text: 'Default', value: 'default' },
         { text: 'Actions', value: 'action', sortable: false },
       ],
-      defaultProfile: [],
+      profileIdOfCheckedItems: [],
       currentProfileJobOptions: null,
       profileInterval: null,
     };
@@ -152,7 +153,7 @@ export default {
     this.$store.dispatch('loadProfiles').then(() => {
       const defaultProfile = this.getDefaultProfile;
       if (defaultProfile !== 'undefined' && defaultProfile) {
-        this.defaultProfile = [defaultProfile.id];
+        this.profileIdOfCheckedItems = [defaultProfile.id];
       }
     });
 
@@ -228,7 +229,7 @@ export default {
     },
 
     handleDefaultProfileCheckBoxChange() {
-      this.$store.dispatch('setDefaultProfileId', this.defaultProfile[0]);
+      this.$store.dispatch('setDefaultProfileId', this.profileIdOfCheckedItems[0]);
     },
   },
 };
