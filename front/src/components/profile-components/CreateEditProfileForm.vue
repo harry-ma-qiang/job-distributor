@@ -66,12 +66,8 @@ export default {
     defaultProfile: {
       type: Object,
       default: () => ({
-        Name: '', Options: { type: Object, default: () => ({}) },
+        Name: '', Id: 0, Options: { type: Object, default: () => ({}) },
       }),
-    },
-    profileId: {
-      type: Number,
-      default: 0,
     },
   },
 
@@ -104,7 +100,7 @@ export default {
     },
 
     saveForm() {
-      this.$emit('save', this.profile, this.profileId);
+      this.$emit('save', this.profile);
     },
 
     handleUpdateJobOptionOfJobInputsFormGenerator(jobOption) {
