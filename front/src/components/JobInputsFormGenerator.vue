@@ -109,16 +109,8 @@ export default {
       options.forEach((s) => { Vue.delete(this.jobOptions, s.key); });
     },
 
-    getJobOptionsObject() {
-      return JSON.parse(JSON.stringify(this.jobOptions));
-    },
-
     getJobOptionsKeys() {
-      return Object.keys(this.getJobOptionsObject());
-    },
-
-    getOptionalOptionsKeys() {
-      return Object.keys(this.options).filter(s => s.is_optional);
+      return Object.keys(this.jobOptions);
     },
 
     getNumberInputRows() {
@@ -133,7 +125,7 @@ export default {
     },
 
     getNumberOfJobOptions() {
-      return Object.keys(this.getJobOptionsObject()).length;
+      return Object.keys(this.jobOptions).length;
     },
 
     getNameOfOptionByKey(key) {
