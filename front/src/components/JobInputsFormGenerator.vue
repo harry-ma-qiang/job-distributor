@@ -14,21 +14,15 @@
           @input="handleComboboxOptionsInput"
         ></v-combobox>
       </v-row>
-      <v-row v-for="i in getNumberInputRows()"
-      v-bind:key="i">
-        <v-col v-for="s in getColumnNumberRange(i)" v-bind:key="s"
+      <v-row v-for="(rowJobs, i) in rowsJobs" v-bind:key="i">
+        <v-col v-for="rowJob in rowJobs" v-bind:key="rowJob.key"
         cols="12" :sm="12/defaultNumberColumnsPerRow" :md="12/defaultNumberColumnsPerRow">
           <v-text-field
-          v-if="getNumberOfJobOptions() > s"
-          :value="jobOptions[getJobOptionsKeys()[s]]"
-          :label="getNameOfOptionByKey(getJobOptionsKeys()[s])"
-          @change="handleFormInputChange($event, getJobOptionsKeys()[s])">
-            <template v-slot:prepend v-if="getIsOptionalOfOptionByKey(getJobOptionsKeys()[s])">
-              <v-icon
-                size="25px"
-                class="mr-2"
-                @click="handleDeleteOptionIconClick(getJobOptionsKeys()[s])"
-              >
+          :value="rowJob.value"
+          :label="rowJob.name"
+          @change="handleFormInputChange($event, rowJob.key)">
+            <template v-slot:prepend v-if="rowJob.is_optional">
+              <v-icon size="25px" class="mr-2" @click="handleDeleteOptionIconClick(rowJob.key)">
                 close
               </v-icon>
             </template>
@@ -42,7 +36,6 @@
 import {
   VContainer, VRow, VCol, VTextField, VIcon, VCombobox,
 } from 'vuetify/lib';
-import Vue from 'vue';
 
 export default {
   name: 'CreateEditJobForm',
@@ -88,6 +81,31 @@ export default {
     };
   },
 
+  computed: {
+    rowsJobs() {
+      const result = [];
+      let i = 0;
+      let j = 0;
+      if (Object.keys(this.jobOptions).length > 0) { result[i] = []; }
+
+      Object.keys(JSON.parse(JSON.stringify(this.jobOptions))).forEach((key) => {
+        if (j >= this.defaultNumberColumnsPerRow) {
+          j = 0;
+          i += 1;
+          result[i] = [];
+        }
+
+        const option = this.options.find(x => x.key === key);
+        result[i].push({
+          key, value: this.jobOptions[key], name: option ? option.name : '', is_optional: option ? option.is_optional : null,
+        });
+        j += 1;
+      });
+
+      return result;
+    },
+  },
+
   created() {
     this.selectedOptions = this.getOptionsFromJobOptions(
       this.getOptionalOptions(this.options), this.jobOptions,
@@ -101,47 +119,8 @@ export default {
 
     getOptionalOptions: options => options.filter(s => s.is_optional),
 
-    setJobOptions(options) {
-      options.forEach((s) => { this.$set(this.jobOptions, s.key, ''); });
-    },
-
-    deleteJobOptions(options) {
-      options.forEach((s) => { Vue.delete(this.jobOptions, s.key); });
-    },
-
     getJobOptionsKeys() {
       return Object.keys(this.jobOptions);
-    },
-
-    getNumberInputRows() {
-      return Array.from(Array(
-        Math.ceil(this.getNumberOfJobOptions() / this.numberColumnsPerRow),
-      ).keys());
-    },
-
-    getColumnNumberRange(number) {
-      return this.range(number * this.numberColumnsPerRow, number
-       * this.numberColumnsPerRow + this.numberColumnsPerRow - 1);
-    },
-
-    getNumberOfJobOptions() {
-      return Object.keys(this.jobOptions).length;
-    },
-
-    getNameOfOptionByKey(key) {
-      const option = this.options.find(x => x.key === key);
-
-      return option ? option.name : '';
-    },
-
-    getIsOptionalOfOptionByKey(key) {
-      const option = this.options.find(x => x.key === key);
-
-      return option ? option.is_optional : null;
-    },
-
-    getJobOptionByOrderNumber(number) {
-      return this.jobOptions[Object.keys(this.jobOptions)[number]];
     },
 
     async handleDeleteOptionIconClick(jobOptionKey) {
