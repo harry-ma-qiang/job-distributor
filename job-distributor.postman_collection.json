@@ -1,0 +1,359 @@
+{
+	"info": {
+		"_postman_id": "80aa0aa3-e0dc-44ea-9936-8bce901a4069",
+		"name": "job-distributor",
+		"description": "https://github.com/harry-ma-qiang/job-distributor",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Show system information",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api"
+					]
+				},
+				"description": "Return information about system (version, name of the system)."
+			},
+			"response": []
+		},
+		{
+			"name": "Add job",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Options\": {\n\t\t\"input\": \"/tmp/colorbar.mp4\",\n\t\t\"output\": \"/tmp/out.mp4\",\n\t\t\"videoCodec\": \"h264\",\n\t\t\"audioCodec\": \"acc\",\n\t\t\"format\": \"mp4\"\n\t},\n\t\"Name\": \"Test Job\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/job",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"job"
+					]
+				},
+				"description": "Add job to the job queue (for further processing)."
+			},
+			"response": []
+		},
+		{
+			"name": "Edit job",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Options\": {\n\t\t\"input\": \"/tmp/colorbar.mp4\",\n\t\t\"output\": \"/tmp/out2.mp4\",\n\t\t\"videoCodec\": \"h264\",\n\t\t\"audioCodec\": \"acc\"\n\t},\n\t\"Name\": \"Test Job edited\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/updateJob/111",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"updateJob",
+						"111"
+					]
+				},
+				"description": "Edit job from the job queue (change or add new options)."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete job",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/job/111",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"job",
+						"111"
+					]
+				},
+				"description": "Delete job from the job queue."
+			},
+			"response": []
+		},
+		{
+			"name": "Get jobs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/getJobs",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"getJobs"
+					]
+				},
+				"description": "Return list of all jobs."
+			},
+			"response": []
+		},
+		{
+			"name": "Pop job from the queue",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/fetchJob",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"fetchJob"
+					]
+				},
+				"description": "Remove (set status 'doing') the next job from the queue and return it."
+			},
+			"response": []
+		},
+		{
+			"name": "Set job status",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"id\": 101, \"status\": \"todo\" }"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/setJobStatus",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"setJobStatus"
+					]
+				},
+				"description": "Set job status."
+			},
+			"response": []
+		},
+		{
+			"name": "Get options",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/getOptions",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"getOptions"
+					]
+				},
+				"description": "Return list of available options."
+			},
+			"response": []
+		},
+		{
+			"name": "Add profile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"videoCodec\": \"h264\",\n\"audioCodec\": \"acc\",\n\"format\": \"mp4\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/profile/NewProfile",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"profile",
+						"NewProfile"
+					]
+				},
+				"description": "Add profile with job options (options will be using to fill out job information automatically)."
+			},
+			"response": []
+		},
+		{
+			"name": "Edit profile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"Id\": \"11\", \n\t\"Name\": \"NewProfileEdited\", \n\t\"Options\": {\n\t\"videoCodec\": \"h264\",\n\t\"format\": \"mov\"\n\t} \n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/updateProfile",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"updateProfile"
+					]
+				},
+				"description": "Edit profile. Change or add new options, change the name of the profile."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete profile",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/profile/11",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"profile",
+						"11"
+					]
+				},
+				"description": "Delete profile from db."
+			},
+			"response": []
+		},
+		{
+			"name": "Get profiles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/getProfiles",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"getProfiles"
+					]
+				},
+				"description": "Return list of all profiles."
+			},
+			"response": []
+		},
+		{
+			"name": "Get profile options",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/getProfileOptions/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"getProfileOptions",
+						"1"
+					]
+				},
+				"description": "Return profile options by profile id."
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
