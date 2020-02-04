@@ -83,12 +83,13 @@ export default {
 
   computed: {
     rowsJobs() {
-      const result = [];
+      const jobOptions = JSON.parse(JSON.stringify(this.jobOptions));
       let i = 0;
       let j = 0;
-      if (Object.keys(this.jobOptions).length > 0) { result[i] = []; }
+      const result = [];
+      result[i] = [];
 
-      Object.keys(JSON.parse(JSON.stringify(this.jobOptions))).forEach((key) => {
+      Object.keys(jobOptions).forEach((key) => {
         if (j >= this.defaultNumberColumnsPerRow) {
           j = 0;
           i += 1;
@@ -97,8 +98,9 @@ export default {
 
         const option = this.options.find(x => x.key === key);
         result[i].push({
-          key, value: this.jobOptions[key], name: option ? option.name : '', is_optional: option ? option.is_optional : null,
+          key, value: jobOptions[key], name: option ? option.name : '', is_optional: option ? option.is_optional : null,
         });
+
         j += 1;
       });
 
