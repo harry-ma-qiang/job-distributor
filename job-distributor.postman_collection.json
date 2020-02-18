@@ -12,15 +12,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api",
+					"raw": "http://{{host}}:{{port}}/api",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api"
 					]
@@ -45,15 +42,12 @@
 					"raw": "{\n\t\"Options\": {\n\t\t\"input\": \"/tmp/colorbar.mp4\",\n\t\t\"output\": \"/tmp/out.mp4\",\n\t\t\"videoCodec\": \"h264\",\n\t\t\"audioCodec\": \"acc\",\n\t\t\"format\": \"mp4\"\n\t},\n\t\"Name\": \"Test Job\"\n}"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/job",
+					"raw": "http://{{host}}:{{port}}/api/job",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"job"
@@ -73,15 +67,12 @@
 					"raw": "{\n\t\"Options\": {\n\t\t\"input\": \"/tmp/colorbar.mp4\",\n\t\t\"output\": \"/tmp/out2.mp4\",\n\t\t\"videoCodec\": \"h264\",\n\t\t\"audioCodec\": \"acc\"\n\t},\n\t\"Name\": \"Test Job edited\"\n}"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/updateJob/111",
+					"raw": "http://{{host}}:{{port}}/api/updateJob/111",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"updateJob",
@@ -98,15 +89,12 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/job/111",
+					"raw": "http://{{host}}:{{port}}/api/job/111",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"job",
@@ -123,15 +111,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/getJobs",
+					"raw": "http://{{host}}:{{port}}/api/getJobs",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"getJobs"
@@ -147,15 +132,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/fetchJob",
+					"raw": "http://{{host}}:{{port}}/api/fetchJob",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"fetchJob"
@@ -181,15 +163,12 @@
 					"raw": "{ \"id\": 101, \"status\": \"todo\" }"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/setJobStatus",
+					"raw": "http://{{host}}:{{port}}/api/setJobStatus",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"setJobStatus"
@@ -205,15 +184,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/getOptions",
+					"raw": "http://{{host}}:{{port}}/api/getOptions",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"getOptions"
@@ -233,15 +209,12 @@
 					"raw": "{\n\"videoCodec\": \"h264\",\n\"audioCodec\": \"acc\",\n\"format\": \"mp4\"\n}"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/profile/NewProfile",
+					"raw": "http://{{host}}:{{port}}/api/profile/NewProfile",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"profile",
@@ -262,15 +235,12 @@
 					"raw": "{ \n\t\"Id\": \"11\", \n\t\"Name\": \"NewProfileEdited\", \n\t\"Options\": {\n\t\"videoCodec\": \"h264\",\n\t\"format\": \"mov\"\n\t} \n}"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/updateProfile",
+					"raw": "http://{{host}}:{{port}}/api/updateProfile",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"updateProfile"
@@ -286,15 +256,12 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/profile/11",
+					"raw": "http://{{host}}:{{port}}/api/profile/11",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"profile",
@@ -311,15 +278,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/getProfiles",
+					"raw": "http://{{host}}:{{port}}/api/getProfiles",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"getProfiles"
@@ -335,15 +299,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/api/getProfileOptions/1",
+					"raw": "http://{{host}}:{{port}}/api/getProfileOptions/1",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{host}}"
 					],
-					"port": "5000",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"getProfileOptions",
