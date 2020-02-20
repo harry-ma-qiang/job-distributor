@@ -68,7 +68,7 @@ def fetch_job():
             result.update({'enable': '1'})
             result.update({'version': Version})
             result.update({'config': request.host_url + 'api/getAttributes'})
-            result.update({'status': request.host_url + 'api/updateJob'})
+            result.update({'status': request.host_url + 'api/setJobStatus'})
 
             db_management.changeJobStatus(job.id, JobStatuses[1])
 
