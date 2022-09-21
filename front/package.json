@@ -14,7 +14,7 @@
     "fibers": "^4.0.2",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.5",
-    "vuetify": "^2.1.15",
+    "vuetify": "^2.6.10",
     "vuetify-confirm": "^2.0.2",
     "vuex": "^3.1.2"
   },
